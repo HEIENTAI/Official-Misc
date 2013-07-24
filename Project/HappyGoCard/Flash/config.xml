@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ConfigData>
+<AdPlayTime>6</AdPlayTime>
+<Marquee>快来HAPPY购体验站 体验最新最酷的商品及点数兑换乐趣喔！</Marquee>
+<Marquee>斯诺登上午已离港飞莫斯科 或转赴冰岛</Marquee>
+<Marquee>巴基斯坦枪击案2名中国公民1名美籍华人遇难 </Marquee>
+<Marquee>央企副总强奸女下属致其患精神障碍 获刑13年 </Marquee>
+
+<MoviePath>video/New_30s_0711.flv</MoviePath>
+<MoviePath>video/Happy_30s_final.flv</MoviePath>
+<MoviePath>video/DHC_15sec.flv</MoviePath>
+<MoviePath>video/Elis.flv</MoviePath>
+
+<MoviePath>video/junk_food_ad_02.jpg</MoviePath>
+<MoviePath>video/null.png</MoviePath>
+<MoviePath>video/a2.jpg</MoviePath>
+<MoviePath>video/426.jpg</MoviePath>
+
+
+</ConfigData>
