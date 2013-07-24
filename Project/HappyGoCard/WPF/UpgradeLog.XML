@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="FlashinWPF">
+</Property><Property Name="Solution File" Value="D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF.sln">
+</Property><Property Name="Date" Value="2013年6月1日">
+</Property><Property Name="Time" Value="上午 01:50">
+</Property></Properties><Event ErrorLevel="0" Project="FlashinWPF" Source="FlashinWPF\FlashinWPF.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="FlashinWPF" Source="FlashinWPF\FlashinWPF.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="FlashControl" Source="FlashControl\FlashControl.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="FlashControl" Source="FlashControl\FlashControl.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="FlashinWPF.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="FlashinWPF.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="FlashinWPF" Source="FlashinWPF\FlashinWPF.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="FlashControl" Source="FlashControl\FlashControl.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>

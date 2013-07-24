@@ -1,0 +1,64 @@
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\bin\Debug\FlashinWPF.exe
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\bin\Debug\FlashinWPF.pdb
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\bin\Debug\AxInterop.ShockwaveFlashObjects.dll
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\bin\Debug\Interop.ShockwaveFlashObjects.dll
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\obj\Debug\Window1.baml
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\obj\Debug\Window1.g.cs
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\obj\Debug\App.g.cs
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF_MarkupCompile.cache
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF.g.resources
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF.Properties.Resources.resources
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF.csproj.GenerateResource.Cache
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF.exe
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF.pdb
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF_Content.g.cs
+C:\Users\jijiah\Documents\Visual Studio Codename Orcas\Projects\FlashinWPF\FlashinWPF\bin\Debug\sample.swf
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF.exe
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF.pdb
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\bin\Debug\sample.swf
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\bin\Debug\FlashinWPF.exe
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\bin\Debug\FlashinWPF.pdb
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\bin\Debug\AxInterop.ShockwaveFlashObjects.dll
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\bin\Debug\Interop.ShockwaveFlashObjects.dll
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\Window1.baml
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\Window1.g.cs
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\App.g.cs
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF_Content.g.cs
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF_MarkupCompile.cache
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF.g.resources
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF.Properties.Resources.resources
+C:\Users\jijiah\Desktop\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF.csproj.GenerateResource.Cache
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF.exe
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF.pdb
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\bin\Debug\sample.swf
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\bin\Debug\FlashinWPF.exe
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\bin\Debug\FlashinWPF.pdb
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\bin\Debug\AxInterop.ShockwaveFlashObjects.dll
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\bin\Debug\Interop.ShockwaveFlashObjects.dll
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\ResolveAssemblyReference.cache
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\Window1.baml
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\Window1.g.cs
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\App.g.cs
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF_Content.g.cs
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF_MarkupCompile.cache
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF.g.resources
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF.Properties.Resources.resources
+D:\_WORKS\自己工作相關\Happy GO\Example\FlashinWPF\FlashinWPF\FlashinWPF\obj\Debug\FlashinWPF.csproj.GenerateResource.Cache
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\obj\Debug\FlashinWPF.exe
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\obj\Debug\FlashinWPF.pdb
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\obj\Debug\Window1.baml
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\obj\Debug\Window1.g.cs
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\obj\Debug\App.g.cs
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\obj\Debug\FlashinWPF_Content.g.cs
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\obj\Debug\FlashinWPF_MarkupCompile.cache
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\obj\Debug\FlashinWPF.g.resources
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\obj\Debug\FlashinWPF.Properties.Resources.resources
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\obj\Debug\FlashinWPF.csproj.GenerateResource.Cache
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\bin\Debug\sample.swf
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\bin\Debug\FlashinWPF.exe
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\bin\Debug\FlashinWPF.pdb
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\bin\Debug\AxInterop.ShockwaveFlashObjects.dll
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\bin\Debug\Interop.ShockwaveFlashObjects.dll
+D:\_WORKS\自己工作相關\Happy GO\CSharp Project\HappyGO_FlashInWPF\FlashinWPF\obj\Debug\FlashinWPF.csprojResolveAssemblyReference.cache
