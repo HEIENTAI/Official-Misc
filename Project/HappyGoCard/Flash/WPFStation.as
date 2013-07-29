@@ -48,7 +48,7 @@
 	public class WPFStation {
 
 		public static const IS_DEBUG_VERSION:Boolean = false; //是否為 degbug 版
-		public static const IS_NO_CARD_VERSION:Boolean = false; //是否為 no card 機型 版
+		public static const IS_NO_CARD_VERSION:Boolean = true; //是否為 no card 機型 版
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
     	public static const LABEL_STAGE_1:String = "ProductList"; 
@@ -206,6 +206,7 @@
 		private var _currentCodeMaxChar: int; // 目前使用者輸入 code 的 length
 		private var _currentCodeInputSeconds: int; // 目前使用者輸入 code 的標題
 		private var _currentMessageToken: String;
+		private var _destroying: Boolean = false;
 		// auto return
 		private var _userLastOperateTime: Date = new Date();
 		private var _userExitExportingPageTime: Date = new Date();
@@ -346,6 +347,9 @@
 		
 		public function SendMessage( commandNum : int, ... args):void
 		{
+			if(_destroying == true)
+				return;
+				
 			_userLastOperateTime = Now;
 			
 			var combinedCommand : String = GlobalMethod.StringArrayConcact(args, COMMAND_SEPARATOR);
@@ -1941,6 +1945,7 @@
 		//注：无参数，发送后结束FLASH
 		public function DoCommand_7104(args:Array):void
 		{
+			_destroying = true;
 			_adMovie.StopVideo();
 			_adMovie = null;
 			RootStage.gotoAndStop(0);
