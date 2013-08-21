@@ -85,6 +85,9 @@
 		public static const MESSAGE_IMAGE_CLIP_Y: int = 292.85; //通用訊息圖片, 
 		public static const MESSAGE_IMAGE_CLIP_ROTATE_Y: int = 372.85;  //通用訊息圖片, 有旋轉的話, Y 要改變
 		public static const COMMAND_SEPARATOR = ",";
+		public static const MAQUEE_MOVE_SPEED: int = 4;
+		public static const MAQUEE_MOVE_SEPARATOR: String = "              ";
+		public static const MAQUEE_ENTRANCE_X: Number = 1080;
 		public static const SELF_DEF_PAGE_MAIN = "MAIN"; //主畫面, 商品列表, 7501
 		public static const SELF_DEF_PAGE_WAITING_AUTH = "WAITING_AUTH"; // 等待用戶輸入授權, 等待輸入購買碼
 		public static const SELF_DEF_PAGE_AUTHORIZED_PURCHASE = "AUTHORIZED_PURCHASE"; //已驗證, 準備購買, 購買碼已輸入 or 已刷卡
@@ -106,9 +109,14 @@
 		public static const INSTANCE_NAME_VIDEO_CLIP = "VideoContainerClip";
 		public static const INSTANCE_NAME_ADIMAGE_CLIP = "ImageContainerClip";
 		public static const INSTANCE_NAME_PRODUCT_MENU_CHLID_CLIP = "ButtonProduct_InnerClip";
-		public static const INSTANCE_NAME_MAQUEE_ROOT = "MaqueeClipRoot";
-		public static const INSTANCE_NAME_MAQUEE_CHILD = "MaqueeClipChild";
-		public static const INSTANCE_NAME_MAQUEE_TEXT = "TextContent";
+		public static const INSTANCE_NAME_MAQUEE_ROOT = "MaqueeClipRoot"; // 20130821 待廢棄
+		public static const INSTANCE_NAME_MAQUEE_CHILD = "MaqueeClipChild"; // 20130821 待廢棄
+		public static const INSTANCE_NAME_MAQUEE_TEXT = "TextContent"; // 20130821 待廢棄
+		
+		public static const INSTANCE_NAME_MAQUEE_DYNAMIC_ROOT = "MaqueeDynamicClipRoot";
+		public static const INSTANCE_NAME_MAQUEE_DYNAMIC_CHILD = "MaqueeDynamicClipChild";
+		public static const INSTANCE_NAME_MAQUEE_DYNAMIC_TEXT = "MaqueeWords";
+		
 		public static const INSTANCE_NAME_EXPORTING_CARD = "MovieMsgExportingCard"
 		public static const INSTANCE_NAME_EXPORTING_CARD_CHILD = "MovieMsgExportingCardChild";
 		public static const INSTANCE_NAME_EXPORTING_PRODUCT = "MovieMsgExportingProduct";
@@ -198,8 +206,8 @@
 		private var _idleSecondsCount : int = 30; //server需要的. 幾秒後認定使用者不在機台前操作
 		private var _adMovie: VideoPlay; // 下方廣告動畫
 		private var _moviePaths: Array;
-		private var _marqueeList: Array;
-		private var _marqueeList_Index: int = 0;
+		private var _marqueeList: Array;  //20130821 maybe marked
+		private var _marqueeList_Index: int = 0; //20130821 maybe marked
 		private var _productAlphaMark: Array = new Array();
 		private var _productDetailResetFlag: Boolean = false; //商品資料是否被重設過 (=是否準備更新中)
 		private var _mobileInputCodeResetFlag: Boolean = false; //手機號碼輸入框的 event 重設 flag
@@ -1659,9 +1667,11 @@
 			}
 			
 			//跑馬燈
+			var allMaqueeWords: String = "";
 			for(var j: int ; j < myXML.Marquee.length() ;j++)
 			{
-				_marqueeList.push(myXML.Marquee[j]);
+				_marqueeList.push(myXML.Marquee[j]);  //20130821 maybe marked
+				allMaqueeWords = allMaqueeWords + myXML.Marquee[j] + MAQUEE_MOVE_SEPARATOR ;
 			}
 			
 			var seconds: int = int(myXML.AdPlayTime);
@@ -1671,9 +1681,15 @@
 			_rootMovie.addEventListener(Event.ENTER_FRAME, _adMovie.Update);
 			_adMovie.PlayVideo(_moviePaths);
 			
-			//maquee
-			var maqueeText: TextField =RootStage[INSTANCE_NAME_MAQUEE_ROOT][INSTANCE_NAME_MAQUEE_CHILD][INSTANCE_NAME_MAQUEE_TEXT];
-			maqueeText.text = _marqueeList[_marqueeList_Index];
+			//maquee , 20130821 discard
+			//var maqueeText: TextField =RootStage[INSTANCE_NAME_MAQUEE_ROOT][INSTANCE_NAME_MAQUEE_CHILD][INSTANCE_NAME_MAQUEE_TEXT];
+			//maqueeText.text = _marqueeList[_marqueeList_Index];
+			
+			var maqueeText: TextField =RootStage[INSTANCE_NAME_MAQUEE_DYNAMIC_ROOT][INSTANCE_NAME_MAQUEE_DYNAMIC_CHILD][INSTANCE_NAME_MAQUEE_DYNAMIC_TEXT];
+			maqueeText.autoSize = TextFieldAutoSize.LEFT; //自動拉寬 
+			maqueeText.wordWrap = false; // 不換行
+			maqueeText.text = allMaqueeWords;
+			maqueeText.border = true;
 		}
 
 		// async 
@@ -2306,16 +2322,24 @@
 			_productDetailResetFlag = false;
 		}
 		
+		// 跑馬燈相關 Update, 20130821 words 從補間動畫, 改為動態設定 + update 移動
 		public function UpdateMaquee():void
 		{
-			var maqueeClip: MovieClip = RootStage[INSTANCE_NAME_MAQUEE_ROOT];
-		
-			if(maqueeClip.currentLabel != LABEL_MAQUEE_END)
-				return;
-			var maqueeText: TextField =maqueeClip[INSTANCE_NAME_MAQUEE_CHILD][INSTANCE_NAME_MAQUEE_TEXT];
-			_marqueeList_Index = (_marqueeList_Index + 1) % _marqueeList.length;
-			maqueeText.text =  _marqueeList[_marqueeList_Index];
+			//20130821 marked
+			//var maqueeClip: MovieClip = RootStage[INSTANCE_NAME_MAQUEE_ROOT];
+			//if(maqueeClip.currentLabel != LABEL_MAQUEE_END)
+				//return;
+			//var maqueeText: TextField =maqueeClip[INSTANCE_NAME_MAQUEE_CHILD][INSTANCE_NAME_MAQUEE_TEXT];
+			//_marqueeList_Index = (_marqueeList_Index + 1) % _marqueeList.length;
+			//maqueeText.text =  _marqueeList[_marqueeList_Index];
 			
+			var maqueeClip: MovieClip = RootStage[INSTANCE_NAME_MAQUEE_DYNAMIC_ROOT][INSTANCE_NAME_MAQUEE_DYNAMIC_CHILD];
+			
+			if(Math.abs(maqueeClip.x) >= maqueeClip.width) //超出邊界, 所有words撥放完畢, 需重置
+			{
+				maqueeClip.x = MAQUEE_ENTRANCE_X;
+			}
+			maqueeClip.x = maqueeClip.x - MAQUEE_MOVE_SPEED;
 		}
 		
 		// Everything in here will be called Every frame.
