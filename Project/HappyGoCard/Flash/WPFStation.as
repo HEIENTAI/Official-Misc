@@ -47,8 +47,8 @@
 	
 	public class WPFStation {
 
-		public static const IS_DEBUG_VERSION:Boolean = false; //是否為 degbug 版
-		public static const IS_NO_CARD_VERSION:Boolean = true; //是否為 no card 機型 版
+		public static const IS_DEBUG_VERSION:Boolean = true; //是否為 degbug 版
+		public static const IS_NO_CARD_VERSION:Boolean = false; //是否為 no card 機型 版
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
     	public static const LABEL_STAGE_1:String = "ProductList"; 
@@ -91,6 +91,7 @@
 		public static const SELF_DEF_PAGE_NOTICE = "NOTICE_MESSAGE"; //警告訊息, 單獨顯示    (弱(子)頁面)
 		public static const SELF_DEF_PAGE_PURCHASE_PRODUCT_DETAIL = "PURCHASE_PRODUCT_DETAIL"; //購買物品詳細資料
 		public static const SELF_DEF_PAGE_EXPORTING_CARD = "EXPORTING_CARD"; //領取卡片頁面
+		public static const SELF_DEF_PAGE_EXPORTING_PRODUCT = "EXPORTING_PRODUCT"; //領取商品頁面 2013.08.15 add
 		public static const SELF_DEF_PAGE_MOBILE_CODE_INPUT = "MOBILE_CODE_INPUT"; //申請卡片頁面 (輸入手機號碼)
 		public static const INSTANCE_NAME_MSG_CLIP = "MovieMsgDefault"; //訊息用影片片段最上層
 		public static const INSTANCE_NAME_MSG_CHILD_CLIP = "MovieMsgNotice"; //訊息用影片片段最子層
@@ -110,6 +111,8 @@
 		public static const INSTANCE_NAME_MAQUEE_TEXT = "TextContent";
 		public static const INSTANCE_NAME_EXPORTING_CARD = "MovieMsgExportingCard"
 		public static const INSTANCE_NAME_EXPORTING_CARD_CHILD = "MovieMsgExportingCardChild";
+		public static const INSTANCE_NAME_EXPORTING_PRODUCT = "MovieMsgExportingProduct";
+		public static const INSTANCE_NAME_EXPORTING_PRODUCT_CHILD = "MovieMsgExportingProductChild";
 		public static const INSTANCE_NAME_MOBILE_CODE_INPUT = "MovieMsgMobile" ;
 		public static const INSTANCE_NAME_MOBILE_CODE_INPUT_CHILD = "MovieMsgMobileChild" ;
 		public static const TOKEN_NAME_POINT_CHECK = "pointcheck";
@@ -207,6 +210,7 @@
 		private var _currentCodeInputSeconds: int; // 目前使用者輸入 code 的標題
 		private var _currentMessageToken: String;
 		private var _destroying: Boolean = false;
+		private var _previousDefaultMessageLoader: Loader = null; //前一次通用訊息的 圖片, 需移除 sh20130815 add
 		// auto return
 		private var _userLastOperateTime: Date = new Date();
 		private var _userExitExportingPageTime: Date = new Date();
@@ -462,7 +466,8 @@
 			}
 			if(evtName == "HiddenAdminBTN_TL")
 			{
-				RecieveMessage("7104");
+				RecieveMessage("7100, 6, 抱歉, 哈哈, 420-021-8816, , 0, msgToken");
+				//RecieveMessage("7103");
 				//RecieveMessage("7502, 6, 1,0,2,0,3,1,4,1,5,0,6,1");
 				//RecieveMessage("7502, 6, 1,0,2,1,3,0,4,1,5,0,6,0");
 				//RecieveMessage("7601, 30, 3, 霹靂包,-5,product_images/HT000003.jpg,聽說這裡是詳細敘述~要補滿很多字~看會不會換行~~~~YO~ 結果字還是不夠呢~ HAHA" );
@@ -661,7 +666,12 @@
 				imageMC.y = MESSAGE_IMAGE_CLIP_Y;
 			}
 			
-			GlobalMethod.LoadMovieClipImage( imageMC, imagePath, OnMessageImageLoaded);
+			if(_previousDefaultMessageLoader != null) // sh20130815 add 修復前一次訊息 PIC 沒移除的 BUG
+			{
+				imageMC.removeChild(_previousDefaultMessageLoader);
+				_previousDefaultMessageLoader = null;
+			}
+			_previousDefaultMessageLoader = GlobalMethod.LoadMovieClipImage( imageMC, imagePath, OnMessageImageLoaded);
 		}
 		
 		//使用預設的提示元件顯示訊息 OLD
@@ -927,6 +937,22 @@
 			
 			_selfDefPage_Previous = _selfDefPage;
 			_selfDefPage = SELF_DEF_PAGE_EXPORTING_CARD;
+			
+			_userLastOperateTime = Now; //換頁也預設, 使用者有操作過, 更新 idle 秒數
+			
+			var clip: MovieClip = RootStage[INSTANCE_NAME_EXPORTING_CARD] as MovieClip;
+			clip.gotoAndPlay(LABEL_MESSAGE_SHOW);
+			clip.visible = true;
+		}
+		
+		// 執行 1次, 領取商品 sh20130815 add
+		private function On_Page_ExportingProduct():void
+		{
+			HideProductDetail();
+			DisableMobileCodeInput();
+			
+			_selfDefPage_Previous = _selfDefPage;
+			_selfDefPage = SELF_DEF_PAGE_EXPORTING_PRODUCT;
 			
 			_userLastOperateTime = Now; //換頁也預設, 使用者有操作過, 更新 idle 秒數
 			
@@ -2069,8 +2095,7 @@
 			_userLastOperateTime = Now; //假設使用者有操作過, 更新 idle 秒數
 		}
 		
-		//7901:		加载页面
-		//public function DoCommand_7901(args:Array):void
+		//7103:		加载页面  显示出货动画提示
 		public function DoCommand_7103(args:Array):void
 		{
 			var remainSec = args.shift();

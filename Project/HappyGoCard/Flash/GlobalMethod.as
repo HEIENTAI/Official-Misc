@@ -95,6 +95,7 @@
 			clip.addChild(picLoader);
     		picLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoaded); // event listener which is fired when loading is complete
     		picLoader.load(new URLRequest(imageURL));
+			
 			return picLoader;
 		}
 	}
