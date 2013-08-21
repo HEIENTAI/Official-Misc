@@ -48,7 +48,7 @@
 	public class WPFStation {
 
 		public static const IS_DEBUG_VERSION:Boolean = false; //是否為 degbug 版
-		public static const IS_NO_CARD_VERSION:Boolean = true; //是否為 no card 機型 版
+		public static const IS_NO_CARD_VERSION:Boolean = false; //是否為 no card 機型 版
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
     	public static const LABEL_STAGE_1:String = "ProductList"; 
@@ -217,6 +217,7 @@
 		private var _adMovie: VideoPlay; // 下方廣告動畫
 		private var _moviePaths: Array;
 		private var _defaultProductTextFormat: TextFormat = null;
+		private var _defaultProductText_Y: Number = 0;
 		private var _displayObjectList: Array = new Array(); //所有動態建立的 DisplayObject 需要放於此, sh130821 add
 		private var _marqueeList: Array;  //20130821 maybe marked
 		private var _marqueeList_Index: int = 0; //20130821 maybe marked
@@ -242,6 +243,7 @@
 			_rootStage = rootStage;
 			
 			_defaultProductTextFormat = _rootMovie["ButtonProduct_1"][INSTANCE_NAME_PRODUCT_MENU_CHLID_CLIP]["ProductName"].getTextFormat();
+			_defaultProductText_Y = _rootMovie["ButtonProduct_1"][INSTANCE_NAME_PRODUCT_MENU_CHLID_CLIP]["ProductName"].y;
 			// constructor code
 			ExternalInterface.addCallback("WPFCommand",this.RecieveMessage);
 			//_copyWatching = GlobalMethod.Clone( WATCHING_INSTANCES );
@@ -1498,10 +1500,11 @@
 				var len: Number = products[i].Name.length;
 				var adjustFormat: TextFormat = _defaultProductTextFormat;
 				adjustFormat.align = TextFormatAlign.CENTER;
-				
+
 				if(len <= PRODUCT_NAME_DEFAULT_MAX_LENGTH)
 				{
 					//do nothing, no need adjust
+					productText.y = _defaultProductText_Y;
 				}
 				else if(len <= PRODUCT_NAME_MINIMIZE_1_MAX_LENGTH)
 				{
@@ -1518,6 +1521,7 @@
 				}
 				else
 				{
+					productText.y = _defaultProductText_Y;
 					adjustFormat.size = PRODUCT_NAME_MINIMIZE_3_FONT_SIZE;
 					productText.autoSize = TextFieldAutoSize.CENTER;
 					productText.wordWrap = true;
