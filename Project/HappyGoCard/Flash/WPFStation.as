@@ -47,8 +47,8 @@
 	
 	public class WPFStation {
 
-		public static const IS_DEBUG_VERSION:Boolean = true; //是否為 degbug 版
-		public static const IS_NO_CARD_VERSION:Boolean = false; //是否為 no card 機型 版
+		public static const IS_DEBUG_VERSION:Boolean = false; //是否為 degbug 版
+		public static const IS_NO_CARD_VERSION:Boolean = true; //是否為 no card 機型 版
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
     	public static const LABEL_STAGE_1:String = "ProductList"; 
@@ -217,6 +217,7 @@
 		private var _adMovie: VideoPlay; // 下方廣告動畫
 		private var _moviePaths: Array;
 		private var _defaultProductTextFormat: TextFormat = null;
+		private var _displayObjectList: Array = new Array(); //所有動態建立的 DisplayObject 需要放於此, sh130821 add
 		private var _marqueeList: Array;  //20130821 maybe marked
 		private var _marqueeList_Index: int = 0; //20130821 maybe marked
 		private var _productAlphaMark: Array = new Array();
@@ -254,6 +255,7 @@
 			{
 				CreateDebugTextfield(); // debug 用訊息
 				_rootStage.addChild(DebugTextfield);
+				//_displayObjectList.push(DebugTextfield);
 			}
 			_rootMovie.addEventListener(Event.ENTER_FRAME, Update);
 		
@@ -487,8 +489,8 @@
 			}
 			if(evtName == "HiddenAdminBTN_TL")
 			{
-				RecieveMessage("7100, 6, 抱歉, 哈哈, 420-021-8816, , 0, msgToken");
-				//RecieveMessage("7103");
+				//RecieveMessage("7100, 6, 抱歉, 哈哈, 420-021-8816, , 0, msgToken");
+				RecieveMessage("7105");
 				//RecieveMessage("7502, 6, 1,0,2,0,3,1,4,1,5,0,6,1");
 				//RecieveMessage("7502, 6, 1,0,2,1,3,0,4,1,5,0,6,0");
 				//RecieveMessage("7601, 30, 3, 霹靂包,-5,product_images/HT000003.jpg,聽說這裡是詳細敘述~要補滿很多字~看會不會換行~~~~YO~ 結果字還是不夠呢~ HAHA" );
@@ -1464,6 +1466,7 @@
 				imageClip = new MovieClip();
 				products[i].ImageClip = imageClip;
 				products[i].InnerClip.addChild(products[i].ImageClip);
+				_displayObjectList.push(products[i].ImageClip)
 				products[i].IncPointClip = products[i].InnerClip["IncPointClip"];
 				products[i].DecPointClip = products[i].InnerClip["DecPointClip"];
 				products[i].PointField = products[i].InnerClip["PointField"];
@@ -1488,6 +1491,7 @@
 				
 				products[i].PointField.text =  String( Math.abs(products[i].PurchasePoint) );
 				products[i].PicLoader = GlobalMethod.LoadMovieClipImage( products[i].ImageClip, products[i].ImagePath, ProductImageLoaded);
+				_displayObjectList.push(products[i].PicLoader);
 				
 				productText.text = products[i].Name;
 				productText.wordWrap = true;
@@ -2036,6 +2040,34 @@
 			RootStage.gotoAndStop(0);
 			_selfDefPage == "";
 			RootStage.Destroy();
+		}
+		
+		//命令格式	7105
+		//注：无参数，发送后复位FLASH，和刚加载FLASH时的效果一样
+		public function DoCommand_7105(args:Array):void
+		{
+			_destroying = true;
+			_adMovie.StopVideo();
+			_adMovie = null;
+			RootStage.gotoAndPlay(0);
+			_selfDefPage == "";
+			
+			//remove all dynamic create MC
+			var mc : DisplayObject = null;
+			var parentMC : MovieClip = null;
+			for(var i : int = 0 ; i < _displayObjectList.length; i++ )
+			{
+				mc = _displayObjectList[i];
+				if(mc == null)
+					continue;
+				if(mc.parent == null)
+					continue;
+				parentMC = mc.parent as MovieClip;
+				parentMC.removeChild(mc);
+			}
+			
+			RootStage.Destroy();
+			RootStage.Start();
 		}
 		
 		//7501,页面倒计时长(秒)，商品总数量，商品编号(从1开始)，商品名称，点数，图片路径
