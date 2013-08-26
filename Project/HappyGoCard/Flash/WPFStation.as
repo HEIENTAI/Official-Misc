@@ -48,7 +48,7 @@
 	public class WPFStation {
 
 		public static const IS_DEBUG_VERSION:Boolean = false; //是否為 degbug 版
-		public static const IS_NO_CARD_VERSION:Boolean = false; //是否為 no card 機型 版
+		public static const IS_NO_CARD_VERSION:Boolean = true; //是否為 no card 機型 版
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
     	public static const LABEL_STAGE_1:String = "ProductList"; 
@@ -69,8 +69,10 @@
 		public static const MAX_PURCHASE_CODE: int = 10;
 		public static const WAITING_SET_ALPHA_INTERVAL = 100;
 		public static const WAITING_SET_ALPHA_REPEAT = 35;
-		public static const MESSAGE_IMAGE_W: int = 243;
-		public static const MESSAGE_IMAGE_H: int = 150;
+		public static const MESSAGE_IMAGE_W: int = 300;
+		public static const MESSAGE_IMAGE_H: int = 270;
+		public static const MESSAGE_IMAGE_ROTATE_W: int = 243;
+		public static const MESSAGE_IMAGE_ROTATE_H: int = 150;
 		public static const PRODUCT_DETAIL_IMAGE_W: int = 300;
 		public static const PRODUCT_DETAIL_IMAGE_H: int = 180;
 		public static const PRODUCT_DETAIL_IMAGE_X: int = 0;
@@ -467,14 +469,13 @@
 			//test
 			if(evtName == "HiddenAdminBTN_TR")
 			{
-							RecieveMessage("7501, 20, 6, 1,辣的面,-5, product_images/HT000001.jpg,"+
-					   		  "2,方便面,-5, product_images/HT000002.jpg,"+
-								  "3,不方便面,-5, product_images/HT000003.jpg,"+
-								  "4,藍莓汁,-65, product_images/HT15966.png,"+
-								  "5,楊梅汁,25, product_images/HT35195.png,"+
-								  "6,黑莓汁,-5, product_images/HT44310.png");
+							//RecieveMessage("7501, 20, 6, 1,辣的面,-5, product_images/HT000001.jpg,"+
+					   		  //"2,方便面,-5, product_images/HT000002.jpg,"+
+								//  "3,不方便面,-5, product_images/HT000003.jpg,"+
+								 // "4,藍莓汁,-65, product_images/HT15966.png,"+
+								 // "5,楊梅汁,25, product_images/HT35195.png,"+
+								 // "6,黑莓汁,-5, product_images/HT44310.png");
 
-				//RecieveMessage("7100, 6, 抱歉, 券號輸入錯誤 \n 如有疑問，請洽客服, 420-021-8816, product_images/HappyGo.png, 340, msgToken");
 				//RecieveMessage("7710, 5, 2053");
 			}
 			
@@ -491,8 +492,9 @@
 			}
 			if(evtName == "HiddenAdminBTN_TL")
 			{
-				//RecieveMessage("7100, 6, 抱歉, 哈哈, 420-021-8816, , 0, msgToken");
-				RecieveMessage("7105");
+				RecieveMessage("7100, 6, 頭部, 正文, 420-021-8816, product_images/HT000003.jpg, 0, msgToken");
+				//RecieveMessage("7100, 6, 抱歉, 券號輸入錯誤 \n 如有疑問，請洽客服, 420-021-8816, product_images/HappyGo.png, 340, msgToken");
+				//RecieveMessage("7105");
 				//RecieveMessage("7502, 6, 1,0,2,0,3,1,4,1,5,0,6,1");
 				//RecieveMessage("7502, 6, 1,0,2,1,3,0,4,1,5,0,6,0");
 				//RecieveMessage("7601, 30, 3, 霹靂包,-5,product_images/HT000003.jpg,聽說這裡是詳細敘述~要補滿很多字~看會不會換行~~~~YO~ 結果字還是不夠呢~ HAHA" );
@@ -647,6 +649,7 @@
 			}
 
 			var mc: MovieClip = RootStage.getChildByName( INSTANCE_NAME_MSG_CLIP ) as MovieClip;
+			mc.gotoAndStop( LABEL_MESSAGE_SHOW );
 			
 			if(mc == null)
 			{
@@ -1200,7 +1203,7 @@
 			}
 		}
 		
-		//執行多次, 领取卡片(等待出卡)
+		//執行多次, 輸入 mobile code(等待出卡)
 		private function Page_MobileCodeInput(): void
 		{
 			//因為補間動畫的關係, BTN visible最好每個 frame 設定一次
@@ -1782,20 +1785,33 @@
 			var w_h_ratio: Number = MESSAGE_IMAGE_H / MESSAGE_IMAGE_W;
 			var newImageRatio: Number = image.height / image.width ;
 			
+			var mc: MovieClip = e.target.loader.parent;
+			var h: int = 0;
+			var w: int = 0;
+			if(mc.rotation != 0)
+			{
+				h = MESSAGE_IMAGE_ROTATE_H;
+				w = MESSAGE_IMAGE_ROTATE_W;
+			}
+			else
+			{
+				h = MESSAGE_IMAGE_H;
+				w = MESSAGE_IMAGE_W;			
+			}
 			if(newImageRatio > w_h_ratio) //比例 相較預設尺吋, 偏高
 			{
-				image.height = MESSAGE_IMAGE_H;
-				image.width = (MESSAGE_IMAGE_H / newImageRatio);
+				image.height = h;
+				image.width = (h / newImageRatio);
 			}
 			else //比例 相較預設尺吋, 偏寬
 			{
-				image.height = MESSAGE_IMAGE_W * newImageRatio;
-				image.width = MESSAGE_IMAGE_W;	
+				image.height = w * newImageRatio;
+				image.width = w;	
 			}
 			
 			//置中作業
-			image.x = (MESSAGE_IMAGE_W  - image.width)/2 ;
-			image.y = (MESSAGE_IMAGE_H  - image.height)/2;
+			image.x = (w  - image.width)/2 ;
+			image.y = (h  - image.height)/2;
 		}
 		
 		private function OnProductDetailImageLoaded(e:Event) 
