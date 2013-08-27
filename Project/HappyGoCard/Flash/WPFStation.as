@@ -48,7 +48,7 @@
 	public class WPFStation {
 
 		public static const IS_DEBUG_VERSION:Boolean = false; //是否為 degbug 版
-		public static const IS_NO_CARD_VERSION:Boolean = true; //是否為 no card 機型 版
+		public static const IS_NO_CARD_VERSION:Boolean = false; //是否為 no card 機型 版
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
     	public static const LABEL_STAGE_1:String = "ProductList"; 
@@ -492,9 +492,9 @@
 			}
 			if(evtName == "HiddenAdminBTN_TL")
 			{
-				RecieveMessage("7100, 6, 頭部, 正文, 420-021-8816, product_images/HT000003.jpg, 0, msgToken");
+				//RecieveMessage("7100, 6, 頭部, 正文, 420-021-8816, product_images/HT000003.jpg, 0, msgToken");
 				//RecieveMessage("7100, 6, 抱歉, 券號輸入錯誤 \n 如有疑問，請洽客服, 420-021-8816, product_images/HappyGo.png, 340, msgToken");
-				//RecieveMessage("7105");
+				RecieveMessage("7105");
 				//RecieveMessage("7502, 6, 1,0,2,0,3,1,4,1,5,0,6,1");
 				//RecieveMessage("7502, 6, 1,0,2,1,3,0,4,1,5,0,6,0");
 				//RecieveMessage("7601, 30, 3, 霹靂包,-5,product_images/HT000003.jpg,聽說這裡是詳細敘述~要補滿很多字~看會不會換行~~~~YO~ 結果字還是不夠呢~ HAHA" );
@@ -2066,28 +2066,32 @@
 		//注：无参数，发送后复位FLASH，和刚加载FLASH时的效果一样
 		public function DoCommand_7105(args:Array):void
 		{
-			_destroying = true;
-			_adMovie.StopVideo();
-			_adMovie = null;
-			RootStage.gotoAndPlay(0);
-			_selfDefPage == "";
-			
-			//remove all dynamic create MC
-			var mc : DisplayObject = null;
-			var parentMC : MovieClip = null;
-			for(var i : int = 0 ; i < _displayObjectList.length; i++ )
-			{
-				mc = _displayObjectList[i];
-				if(mc == null)
-					continue;
-				if(mc.parent == null)
-					continue;
-				parentMC = mc.parent as MovieClip;
-				parentMC.removeChild(mc);
-			}
-			
-			RootStage.Destroy();
-			RootStage.Start();
+// sh130827 marked, destruct 毀滅這個 clip, 20130825 驗證後無效, flash 的 destroy 非常不乾淨, gc 也有時間差，
+// dynamic create 的 DisplayObject 也不會消除，改 remove swf
+
+//			_destroying = true;
+//			//_adMovie.StopVideo();
+//			_adMovie = null;
+//			RootStage.gotoAndPlay(0);
+//			_selfDefPage == "";
+//			
+//			//remove all dynamic create MC
+//			var mc : DisplayObject = null;
+//			var parentMC : MovieClip = null;
+//			for(var i : int = 0 ; i < _displayObjectList.length; i++ )
+//			{
+//				mc = _displayObjectList[i];
+//				if(mc == null)
+//					continue;
+//				if(mc.parent == null)
+//					continue;
+//				parentMC = mc.parent as MovieClip;
+//				parentMC.removeChild(mc);
+//			}
+//			RootStage.Destroy();
+//			RootStage.Start();
+
+			RootStage.Reload();
 		}
 		
 		//7501,页面倒计时长(秒)，商品总数量，商品编号(从1开始)，商品名称，点数，图片路径
