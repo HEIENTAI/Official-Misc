@@ -48,7 +48,7 @@
 	public class WPFStation {
 
 		public static const IS_DEBUG_VERSION:Boolean = false; //是否為 degbug 版
-		public static const IS_NO_CARD_VERSION:Boolean = false; //是否為 no card 機型 版
+		public static const IS_NO_CARD_VERSION:Boolean = true; //是否為 no card 機型 版
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
     	public static const LABEL_STAGE_1:String = "ProductList"; 
@@ -494,8 +494,15 @@
 			{
 				//RecieveMessage("7100, 6, 頭部, 正文, 420-021-8816, product_images/HT000003.jpg, 0, msgToken");
 				//RecieveMessage("7100, 6, 抱歉, 券號輸入錯誤 \n 如有疑問，請洽客服, 420-021-8816, product_images/HappyGo.png, 340, msgToken");
-				RecieveMessage("7105");
-				//RecieveMessage("7502, 6, 1,0,2,0,3,1,4,1,5,0,6,1");
+				RecieveMessage("7104");
+				
+//				RecieveMessage("7501, 40, 6, 1,不好吃,-5, product_images/HT000001.jpg,"+
+//						   		  "2,不好吃,-5, product_images/HT35195.png,"+
+//								  "3,不好吃難吃阿難吃阿,-5, product_images/HT000003.jpg,"+
+//								  "4,難吃阿難吃阿難吃阿難吃阿,-65, product_images/HT15966.png,"+
+//								  "5,難吃阿難吃阿難吃阿難吃阿難吃阿難吃阿,25, product_images/HT000002.jpg,"+
+//								  "6,難吃阿難吃阿難吃阿難吃阿難吃阿難吃阿難吃阿難吃阿難吃阿,-5, product_images/HT44310.png");
+//				RecieveMessage("7502, 6, 1,0,2,0,3,1,4,1,5,0,6,1");
 				//RecieveMessage("7502, 6, 1,0,2,1,3,0,4,1,5,0,6,0");
 				//RecieveMessage("7601, 30, 3, 霹靂包,-5,product_images/HT000003.jpg,聽說這裡是詳細敘述~要補滿很多字~看會不會換行~~~~YO~ 結果字還是不夠呢~ HAHA" );
 				//RecieveMessage("7901, 8");
@@ -2055,7 +2062,8 @@
 		public function DoCommand_7104(args:Array):void
 		{
 			_destroying = true;
-			_adMovie.StopVideo();
+			if(_adMovie != null)
+				_adMovie.StopVideo();
 			_adMovie = null;
 			RootStage.gotoAndStop(0);
 			_selfDefPage == "";
@@ -2091,6 +2099,8 @@
 //			RootStage.Destroy();
 //			RootStage.Start();
 
+			if(_adMovie != null)
+				_adMovie.StopVideo();
 			RootStage.Reload();
 		}
 		

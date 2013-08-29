@@ -86,7 +86,9 @@
         	PlaySingleVideo( _moviePaths[_currentMovieIndex]);
         }
         public function StopVideo():void{
+			_stream.pause();
         	_stream.close();
+			_stream.dispose();
 			_currentMovieIndex = 0;
 			_moviePaths.length = 0;
 		}
