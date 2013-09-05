@@ -48,7 +48,7 @@
 	public class WPFStation {
 
 		public static const IS_DEBUG_VERSION:Boolean = false; //是否為 degbug 版
-		public static const IS_NO_CARD_VERSION:Boolean = true; //是否為 no card 機型 版
+		public static const IS_NO_CARD_VERSION:Boolean = false; //是否為 no card 機型 版
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
     	public static const LABEL_STAGE_1:String = "ProductList"; 
@@ -239,30 +239,9 @@
 		private var _userExitExportingPageTime: Date = new Date();
 
 		public function WPFStation( rootMovie: DisplayObject, rootStage: Stage) {
-			InitUIRuntimeData();
 			
-			_rootMovie = (rootMovie as MovieClip);
-			_rootStage = rootStage;
-			
-			_defaultProductTextFormat = _rootMovie["ButtonProduct_1"][INSTANCE_NAME_PRODUCT_MENU_CHLID_CLIP]["ProductName"].getTextFormat();
-			_defaultProductText_Y = _rootMovie["ButtonProduct_1"][INSTANCE_NAME_PRODUCT_MENU_CHLID_CLIP]["ProductName"].y;
-			// constructor code
-			ExternalInterface.addCallback("WPFCommand",this.RecieveMessage);
-			//_copyWatching = GlobalMethod.Clone( WATCHING_INSTANCES );
-			
-			for(var i: int=0 ; i < WATCHING_INSTANCES.length ;i++)
-			{
-				_copyWatching.push(WATCHING_INSTANCES[i]);
-			}
-			
-			if(IS_DEBUG_VERSION == true)
-			{
-				CreateDebugTextfield(); // debug 用訊息
-				_rootStage.addChild(DebugTextfield);
-				//_displayObjectList.push(DebugTextfield);
-			}
-			_rootMovie.addEventListener(Event.ENTER_FRAME, Update);
-		
+			Initialize(rootMovie, rootStage);
+
 			// debug 專區
 			//DoCommand_1500([1500, 399]);
 			//DoCommand_1900(null);
@@ -294,13 +273,15 @@
 			
 			//RecieveMessage("7101,1,ButtonProduct_1,1");
 			
-			_selfDefPage_Previous = SELF_DEF_PAGE_MAIN;
-			_selfDefPage = ""; //尚未初始化的頁面
-			
-			
-			DebugMsg("LoadXML(FILE_CONFIG_XML , OnConfigXMLLoaded);");
-			LoadXML(FILE_CONFIG_XML , OnConfigXMLLoaded);
-			
+//			
+//										RecieveMessage("7501, 20, 6, 1,辣的面,-5, product_images/HT000001.jpg,"+
+//					   		  "2,方便面,-5, product_images/HT000002.jpg,"+
+//								  "3,不方便面,-5, product_images/HT000003.jpg,"+
+//								  "4,藍莓汁,-65, product_images/HT15966.png,"+
+//								  "5,楊梅汁,25, product_images/HT35195.png,"+
+//								  "6,黑莓汁,-5, product_images/HT44310.png");
+								 
+								 
 //			if(IS_DEBUG_VERSION)
 //			{
 //							RecieveMessage("7501, 5, 6, 1,不好吃,-5, product_images/HT000001.jpg,"+
@@ -310,6 +291,46 @@
 //								  "5,難吃阿,25, product_images/HT000002.jpg,"+
 //								  "6,難吃阿,-5, product_images/HT44310.png");
 //			}
+		}
+		
+		public function Initialize(rootMovie: DisplayObject, rootStage: Stage):void
+		{
+			_rootMovie = (rootMovie as MovieClip);
+			_rootStage = rootStage;
+			
+			// constructor code
+			ExternalInterface.addCallback("WPFCommand",this.RecieveMessage);
+			
+			//前一次載入後的 text field 無法隨著  movieclip 移除, 待查
+			if(_debugText != null)
+			{
+				if(_debugText.parent == _rootStage)
+					_rootStage.removeChild(_debugText);
+			}
+			
+			InitUIRuntimeData();
+			
+			_defaultProductTextFormat = _rootMovie["ButtonProduct_1"][INSTANCE_NAME_PRODUCT_MENU_CHLID_CLIP]["ProductName"].getTextFormat();
+			_defaultProductText_Y = _rootMovie["ButtonProduct_1"][INSTANCE_NAME_PRODUCT_MENU_CHLID_CLIP]["ProductName"].y;
+			
+			
+			for(var i: int=0 ; i < WATCHING_INSTANCES.length ;i++)
+			{
+				_copyWatching.push(WATCHING_INSTANCES[i]);
+			}
+			
+			if(IS_DEBUG_VERSION == true)
+			{
+				CreateDebugTextfield(); // debug 用訊息
+			}
+			_rootMovie.addEventListener(Event.ENTER_FRAME, Update);
+			
+			_selfDefPage_Previous = SELF_DEF_PAGE_MAIN;
+			_selfDefPage = ""; //尚未初始化的頁面
+			
+			
+			DebugMsg("LoadXML(FILE_CONFIG_XML , OnConfigXMLLoaded);");
+			LoadXML(FILE_CONFIG_XML , OnConfigXMLLoaded);
 		}
 		
 		// "RecieveMessage" 此 method name 必須在 csharp 端的 invoke name (in XML)內設定
@@ -477,6 +498,14 @@
 								 // "6,黑莓汁,-5, product_images/HT44310.png");
 
 				//RecieveMessage("7710, 5, 2053");
+				RecieveMessage("7105");
+				
+				RecieveMessage("7501, 20, 6, 1,辣的面,-5, product_images/HT000001.jpg,"+
+					   		  "2,方便面,-5, product_images/HT000002.jpg,"+
+								  "3,不方便面,-5, product_images/HT000003.jpg,"+
+								  "4,藍莓汁,-65, product_images/HT15966.png,"+
+								  "5,楊梅汁,25, product_images/HT35195.png,"+
+								  "6,黑莓汁,-5, product_images/HT44310.png");
 			}
 			
 			if(evtName == "HiddenAdminBTN_BR")
@@ -590,10 +619,15 @@
 			_debugText.x = 10;
 			_debugText.y = 10;
 			_debugText.width = 450;
-			_debugText.height = 35;
+			_debugText.height = 120;
+			_debugText.wordWrap = true;
 			_debugText.alwaysShowSelection = true;
 			_debugText.border = true;
 			
+			if(_rootStage != null)
+				_rootStage.addChild(_debugText);
+			else
+				DebugMsg("_rootStage !============== null");
 			var format:TextFormat = new TextFormat(); 
             format.font = "Verdana"; 
             format.color = 0x000000; 
@@ -2065,7 +2099,7 @@
 			if(_adMovie != null)
 				_adMovie.StopVideo();
 			_adMovie = null;
-			RootStage.gotoAndStop(0);
+			//RootStage.gotoAndStop(0); 防止 script 重複執行, sh130905 marked
 			_selfDefPage == "";
 			RootStage.Destroy();
 		}
@@ -2076,7 +2110,6 @@
 		{
 // sh130827 marked, destruct 毀滅這個 clip, 20130825 驗證後無效, flash 的 destroy 非常不乾淨, gc 也有時間差，
 // dynamic create 的 DisplayObject 也不會消除，改 remove swf
-
 //			_destroying = true;
 //			//_adMovie.StopVideo();
 //			_adMovie = null;
@@ -2099,8 +2132,24 @@
 //			RootStage.Destroy();
 //			RootStage.Start();
 
+			if(_debugText != null)
+			{
+				if(_debugText.parent==_rootStage)
+					_rootStage.removeChild(_debugText);
+			}
+			
+			//可能性 1.EventListener 似乎是獨立於 parent, 由 global 管理器處理, 需要移除, sh130906
+			//可能性 2. root stage 還是沒辦法移除, 殘留的 listener
+			if(_rootMovie != null)
+				_rootMovie.removeEventListener(Event.ENTER_FRAME, Update);
+			if(_mobileInputCode!=null)
+				_mobileInputCode.addEventListener(KeyboardEvent.KEY_DOWN, MobileCodeInputKeyDown);
+			if(_purchaseCodeInput!=null)
+				_purchaseCodeInput.addEventListener(KeyboardEvent.KEY_DOWN, PurchaseCodeKeyDown);
+			
 			if(_adMovie != null)
 				_adMovie.StopVideo();
+			
 			RootStage.Reload();
 		}
 		
