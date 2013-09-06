@@ -47,7 +47,7 @@
 	
 	public class WPFStation {
 
-		public static const IS_DEBUG_VERSION:Boolean = false; //是否為 degbug 版
+		public static var IS_DEBUG_VERSION:Boolean = false //是否為 degbug 版
 		public static const IS_NO_CARD_VERSION:Boolean = false; //是否為 no card 機型 版
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
@@ -328,8 +328,6 @@
 			_selfDefPage_Previous = SELF_DEF_PAGE_MAIN;
 			_selfDefPage = ""; //尚未初始化的頁面
 			
-			
-			DebugMsg("LoadXML(FILE_CONFIG_XML , OnConfigXMLLoaded);");
 			LoadXML(FILE_CONFIG_XML , OnConfigXMLLoaded);
 		}
 		
@@ -618,7 +616,7 @@
 				_debugText = new TextField();
 			_debugText.x = 10;
 			_debugText.y = 10;
-			_debugText.width = 450;
+			_debugText.width = 800;
 			_debugText.height = 120;
 			_debugText.wordWrap = true;
 			_debugText.alwaysShowSelection = true;
@@ -640,7 +638,7 @@
 		{
 			if(_debugText != null)
 			{
-				_debugText.text = "Debug: " +msg;
+				_debugText.text = _debugText.text + "  Debug: " +msg;
 			}
 			trace("Debug: " +msg);
 		}
@@ -1770,7 +1768,9 @@
 			}
 			
 			var seconds: int = int(myXML.AdPlayTime);
-						
+			if( int(myXML.ForceDebug) >= 1)
+				IS_DEBUG_VERSION = true;
+			
 			_adMovie = new VideoPlay(RootStage[INSTANCE_NAME_VIDEO_CLIP], 
 									 RootStage[INSTANCE_NAME_ADIMAGE_CLIP], 1080, 650, seconds);
 			_rootMovie.addEventListener(Event.ENTER_FRAME, _adMovie.Update);
