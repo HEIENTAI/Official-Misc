@@ -48,7 +48,7 @@
 	public class WPFStation {
 
 		public static var IS_DEBUG_VERSION:Boolean = false //是否為 degbug 版
-		public static const IS_NO_CARD_VERSION:Boolean = false; //是否為 no card 機型 版
+		public static const IS_NO_CARD_VERSION:Boolean = true; //是否為 no card 機型 版
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
     	public static const LABEL_STAGE_1:String = "ProductList"; 
@@ -302,11 +302,7 @@
 			ExternalInterface.addCallback("WPFCommand",this.RecieveMessage);
 			
 			//前一次載入後的 text field 無法隨著  movieclip 移除, 待查
-			if(_debugText != null)
-			{
-				if(_debugText.parent == _rootStage)
-					_rootStage.removeChild(_debugText);
-			}
+			GlobalMethod.CheckAndRemoveChild(_rootStage, _debugText);
 			
 			InitUIRuntimeData();
 			
@@ -638,9 +634,9 @@
 		{
 			if(_debugText != null)
 			{
-				_debugText.text = _debugText.text + "  Debug: " +msg;
+				_debugText.htmlText = _debugText.htmlText + " <br> " + Now + "  Debug: " +msg ;
 			}
-			trace("Debug: " +msg);
+			trace( Now + "  Debug: " +msg + "\n");
 		}
 		
 		private function HideAllMessageMovie(): void
@@ -735,7 +731,8 @@
 			
 			if(_previousDefaultMessageLoader != null) // sh20130815 add 修復前一次訊息 PIC 沒移除的 BUG
 			{
-				imageMC.removeChild(_previousDefaultMessageLoader);
+				//imageMC.removeChild(_previousDefaultMessageLoader); 
+				GlobalMethod.CheckAndRemoveChild(imageMC, _previousDefaultMessageLoader);
 				_previousDefaultMessageLoader = null;
 			}
 			_previousDefaultMessageLoader = GlobalMethod.LoadMovieClipImage( imageMC, imagePath, OnMessageImageLoaded);
@@ -1721,10 +1718,13 @@
 			{
 				for(var j: int= 0 ; j < _allProducts.length; j++)
 				{
+					// remove child 需要檢查 parent, 因為 remve swf 後, 還沒GC 可能不會是 null, 
 					if(_allProducts[j].ImageClip != null)
 					{
-						_allProducts[j].ImageClip.removeChild(_allProducts[j].PicLoader);
-						_allProducts[j].InnerClip.removeChild(_allProducts[j].ImageClip);
+						//_allProducts[j].ImageClip.removeChild(_allProducts[j].PicLoader);
+						GlobalMethod.CheckAndRemoveChild(_allProducts[j].ImageClip, _allProducts[j].PicLoader);
+						//_allProducts[j].InnerClip.removeChild(_allProducts[j].ImageClip);
+						GlobalMethod.CheckAndRemoveChild(_allProducts[j].ImageClip, _allProducts[j].ImageClip);
 					}
 				}
 				
@@ -2132,11 +2132,7 @@
 //			RootStage.Destroy();
 //			RootStage.Start();
 
-			if(_debugText != null)
-			{
-				if(_debugText.parent==_rootStage)
-					_rootStage.removeChild(_debugText);
-			}
+			GlobalMethod.CheckAndRemoveChild(_rootStage, _debugText);
 			
 			//可能性 1.EventListener 似乎是獨立於 parent, 由 global 管理器處理, 需要移除, sh130906
 			//可能性 2. root stage 還是沒辦法移除, 殘留的 listener

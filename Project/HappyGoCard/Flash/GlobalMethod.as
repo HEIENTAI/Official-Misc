@@ -98,5 +98,22 @@
 			
 			return picLoader;
 		}
+		
+		//避免 error #2025 , 先檢查是否為 parent 再進行移除 child displayobject
+		public static function CheckAndRemoveChild(mc: DisplayObjectContainer, child: DisplayObject):Boolean
+		{
+			if(mc == null)
+				return false;
+			if(child == null)
+				return false;
+			if(child.parent != mc)
+			{
+				if(child.parent != null) //still try to remove this object
+					child.parent.removeChild(child);
+				return false;
+			}
+			mc.removeChild(child);
+			return true;
+		}
 	}
 }	
