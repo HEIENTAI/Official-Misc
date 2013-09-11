@@ -91,15 +91,23 @@
 		
 		public static function LoadMovieClipImage( clip: MovieClip, imageURL:String, onLoaded: Function):Loader
 		{
+			if(imageURL == "") // avoid  Error #2044: 未处理的 IOErrorEvent:。 text=Error #2035 
+			{
+				trace( " GlobalMethod.LoadMovieClipImage : imageURL is empty ");
+				return null;
+			}
 			var picLoader : Loader = new Loader();
 			clip.addChild(picLoader);
     		picLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoaded); // event listener which is fired when loading is complete
     		picLoader.load(new URLRequest(imageURL));
 			
+			
+			trace(" GlobalMethod.LoadMovieClipImage : " + imageURL);
 			return picLoader;
 		}
 		
 		//避免 error #2025 , 先檢查是否為 parent 再進行移除 child displayobject
+		//remove child 需要檢查 parent, 因為 remve swf 後, 還沒GC , child可能不會是 null, 
 		public static function CheckAndRemoveChild(mc: DisplayObjectContainer, child: DisplayObject):Boolean
 		{
 			if(mc == null)

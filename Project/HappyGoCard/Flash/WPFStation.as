@@ -48,7 +48,7 @@
 	public class WPFStation {
 
 		public static var IS_DEBUG_VERSION:Boolean = false //是否為 degbug 版
-		public static const IS_NO_CARD_VERSION:Boolean = true; //是否為 no card 機型 版
+		public static const IS_NO_CARD_VERSION:Boolean = false; //是否為 no card 機型 版
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
     	public static const LABEL_STAGE_1:String = "ProductList"; 
@@ -295,6 +295,8 @@
 		
 		public function Initialize(rootMovie: DisplayObject, rootStage: Stage):void
 		{
+			DebugMsg("Initialize");
+			
 			_rootMovie = (rootMovie as MovieClip);
 			_rootStage = rootStage;
 			
@@ -478,7 +480,6 @@
 				return;
 			}
 			
-			
 			if(IS_DEBUG_VERSION == true)
 			{
 			//test
@@ -494,24 +495,26 @@
 				//RecieveMessage("7710, 5, 2053");
 				RecieveMessage("7105");
 				
-				RecieveMessage("7501, 20, 6, 1,辣的面,-5, product_images/HT000001.jpg,"+
-					   		  "2,方便面,-5, product_images/HT000002.jpg,"+
-								  "3,不方便面,-5, product_images/HT000003.jpg,"+
-								  "4,藍莓汁,-65, product_images/HT15966.png,"+
-								  "5,楊梅汁,25, product_images/HT35195.png,"+
-								  "6,黑莓汁,-5, product_images/HT44310.png");
+//				RecieveMessage("7501, 20, 6, 1,辣的面,-5, product_images/HT000001.jpg,"+
+//					   		  "2,方便面,-5, product_images/HT000002.jpg,"+
+//								  "3,不方便面,-5, product_images/HT000003.jpg,"+
+//								  "4,藍莓汁,-65, product_images/HT15966.png,"+
+//								  "5,楊梅汁,25, product_images/HT35195.png,"+
+//								  "6,黑莓汁,-5, product_images/HT44310.png");
 			}
 			
 			if(evtName == "HiddenAdminBTN_BR")
 			{
-							RecieveMessage("7501, 40, 6, 1,不好吃,-5, product_images/HT000001.jpg,"+
-						   		  "2,不好吃,-5, product_images/HT35195.png,"+
-								  "3,不好吃難吃阿難吃阿,-5, product_images/HT000003.jpg,"+
-								  "4,難吃阿難吃阿難吃阿難吃阿,-65, product_images/HT15966.png,"+
-								  "5,難吃阿難吃阿難吃阿難吃阿難吃阿難吃阿,25, product_images/HT000002.jpg,"+
-								  "6,難吃阿難吃阿難吃阿難吃阿難吃阿難吃阿難吃阿難吃阿難吃阿,-5, product_images/HT44310.png");
-								  
+//							RecieveMessage("7501, 40, 6, 1,不好吃,-5, product_images/HT000001.jpg,"+
+//						   		  "2,不好吃,-5, product_images/HT35195.png,"+
+//								  "3,不好吃難吃阿難吃阿,-5, product_images/HT000003.jpg,"+
+//								  "4,難吃阿難吃阿難吃阿難吃阿,-65, product_images/HT15966.png,"+
+//								  "5,難吃阿難吃阿難吃阿難吃阿難吃阿難吃阿,25, product_images/HT000002.jpg,"+
+//								  "6,難吃阿難吃阿難吃阿難吃阿難吃阿難吃阿難吃阿難吃阿難吃阿,-5, product_images/HT44310.png");
+//								  
 							//RecieveMessage("7502, 6, 1,0,2,0,3,1,4,1,5,0,6,1");
+							
+							RecieveMessage("7710, 5, 1999");
 			}
 			if(evtName == "HiddenAdminBTN_TL")
 			{
@@ -533,7 +536,7 @@
 			
 			if(evtName == "HiddenAdminBTN_BL")
 			{
-				RecieveMessage("7801, 30, mobile , 手機號碼, 9");
+				//RecieveMessage("7801, 30, mobile , 手機號碼, 9");
 				//RecieveMessage("7601, 30, 3, 霹靂包,-5,product_images/HT000003.jpg," );
 				//RecieveMessage("7100, 8, 標題, 中間內文, 結尾, , 0");
 //				RecieveMessage("7501, 20, 6, 1,不好吃,-5, product_images/HT000001.jpg,"+
@@ -542,6 +545,8 @@
 //								  "4,難,-65, product_images/HT44310.png,"+
 //								  "5,難阿,25, product_images/HT000002.jpg,"+
 //								  "6,吃阿,-5, product_images/HT15966.png");
+
+				RecieveMessage("7502, 6, 1,0,2,0,3,1,4,1,5,0,6,1");
 			}
 			
 			}
@@ -636,7 +641,7 @@
 			{
 				_debugText.htmlText = _debugText.htmlText + " <br> " + Now + "  Debug: " +msg ;
 			}
-			trace( Now + "  Debug: " +msg + "\n");
+			trace( Now + "  Debug: " +msg );
 		}
 		
 		private function HideAllMessageMovie(): void
@@ -680,6 +685,7 @@
 			
 			if(remaindSeconds == 0) //持續秒數為 0 代表隱藏訊息
 			{
+				DebugMsg(" ShowDefaultMessage.remaindSeconds : " + remaindSeconds);
 				HideDefaultMessage(null);
 			}
 
@@ -706,6 +712,7 @@
 			msgMid.multiline = true;
 			msgMid.wordWrap = true;
 			msgMid.text = midContents;
+			DebugMsg(" msgTitle.text : " + msgMid.text );
 			//msg.htmlText =  "<p>" + contents + "<p>" + "<p> <font color=\"blue\" size = \"32\">This is some text!</font>  <img src='HKP'/>"; // 這個暫時不用
 			msgMid.autoSize = TextFieldAutoSize.CENTER; 
 			//msg.y = mc.height * 0.5 - msg.textHeight * 0.5; //因為有動畫, 可能無用
@@ -735,7 +742,11 @@
 				GlobalMethod.CheckAndRemoveChild(imageMC, _previousDefaultMessageLoader);
 				_previousDefaultMessageLoader = null;
 			}
-			_previousDefaultMessageLoader = GlobalMethod.LoadMovieClipImage( imageMC, imagePath, OnMessageImageLoaded);
+			if(imagePath == "")
+				DebugMsg(" ShowDefaultMessage : imagePath is null " );
+			else
+				_previousDefaultMessageLoader = GlobalMethod.LoadMovieClipImage( imageMC, imagePath, OnMessageImageLoaded);
+				
 		}
 		
 		//使用預設的提示元件顯示訊息 OLD
@@ -902,6 +913,7 @@
 		// 執行 1次, Page Main, 等待使用者感應.主畫面
 		public function On_Page_WaitingMain():void
 		{
+			DebugMsg("On_Page_WaitingMain");
 			ResetUIRuntimeDataFlag(); //防止 UI 出錯, 事件重新加入
 			
 			_selfDefPage_Previous = _selfDefPage;
@@ -928,6 +940,7 @@
 		// 執行 1次, Page UserAuthorize, 等待使用者輸入   購物碼
 		private function On_Page_WaitingUserAuthorize():void
 		{
+			DebugMsg("On_Page_WaitingUserAuthorize");
 			ResetUIRuntimeDataFlag(); //防止 UI 出錯, 事件重新加入
 						
 			_selfDefPage_Previous = _selfDefPage;
@@ -959,6 +972,7 @@
 		// 執行 1次, Page AUTHORIZED_PURCHASE, 已驗證, 準備購買, 購買碼已輸入 or 已刷卡
 		private function On_Page_AuthorizedPurchase():void
 		{
+			DebugMsg("On_Page_AuthorizedPurchase : " + SELF_DEF_PAGE_AUTHORIZED_PURCHASE);
 			_selfDefPage_Previous = _selfDefPage;
 			_selfDefPage = SELF_DEF_PAGE_AUTHORIZED_PURCHASE;
 			
@@ -983,6 +997,7 @@
 		// 執行 1次, 獨立顯示訊息
 		private function On_Page_NoticeMessage():void
 		{
+			DebugMsg("On_Page_NoticeMessage");
 			HideProductDetail();
 			DisableExportingCard();
 			DisableMobileCodeInput();
@@ -996,6 +1011,7 @@
 		// 執行 1次, 領取卡片(等待出卡)
 		private function On_Page_ExportingCard():void
 		{
+			DebugMsg("On_Page_ExportingCard");
 			HideProductDetail();
 			DisableMobileCodeInput();
 			
@@ -1012,6 +1028,7 @@
 		// 執行 1次, 領取商品 sh20130815 add
 		private function On_Page_ExportingProduct():void
 		{
+			DebugMsg("On_Page_ExportingProduct");
 			HideProductDetail();
 			DisableMobileCodeInput();
 			
@@ -1201,6 +1218,8 @@
 			
 			HideProductDetail();
 			SetAll_ProductVisible(false);
+			
+			//(RootStage.getChildByName( INSTANCE_NAME_MSG_CLIP ) as MovieClip)["MovieMsgNotice"].visible = true;
 		}
 		
 		//執行多次, 领取卡片(等待出卡)
@@ -2241,8 +2260,7 @@
 			_userLastOperateTime = Now; //假設使用者有操作過, 更新 idle 秒數
 		}
 		
-		//7701:商品信息
-		//命令格式	7701,页面倒计时长(秒)，剩余点数
+		//命令格式	7710,页面倒计时长(秒)，剩余点数
 		public function DoCommand_7710(args:Array):void
 		{
 			if(args.length <= 1)
@@ -2256,11 +2274,15 @@
 			keepSec = args.shift();
 			remainPoint = args.shift();
 			
-			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_2){
-				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_2);
-			}
+//			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_2){
+//				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_2);
+//			}
+
 			var msg:String = STR_0001 + remainPoint + STR_0002;
 			ShowDefaultMessage(keepSec, "", msg, "", "", 0, TOKEN_NAME_POINT_CHECK);
+			
+			On_Page_NoticeMessage();
+			Page_NoticeMessage();
 			
 			_userLastOperateTime = Now; //假設使用者有操作過, 更新 idle 秒數
 		}
