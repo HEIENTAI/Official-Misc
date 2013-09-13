@@ -48,7 +48,7 @@
 	public class WPFStation {
 
 		public static var IS_DEBUG_VERSION:Boolean = false //是否為 degbug 版
-		public static const IS_NO_CARD_VERSION:Boolean = false; //是否為 no card 機型 版
+		public static const IS_NO_CARD_VERSION:Boolean = true; //是否為 no card 機型 版
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
     	public static const LABEL_STAGE_1:String = "ProductList"; 
@@ -232,7 +232,6 @@
 		private var _currentCodeMaxChar: int; // 目前使用者輸入 code 的 length
 		private var _currentCodeInputSeconds: int; // 目前使用者輸入 code 的標題
 		private var _currentMessageToken: String;
-		private var _destroying: Boolean = false;
 		private var _previousDefaultMessageLoader: Loader = null; //前一次通用訊息的 圖片, 需移除 sh20130815 add
 		// auto return
 		private var _userLastOperateTime: Date = new Date();
@@ -310,7 +309,6 @@
 			
 			_defaultProductTextFormat = _rootMovie["ButtonProduct_1"][INSTANCE_NAME_PRODUCT_MENU_CHLID_CLIP]["ProductName"].getTextFormat();
 			_defaultProductText_Y = _rootMovie["ButtonProduct_1"][INSTANCE_NAME_PRODUCT_MENU_CHLID_CLIP]["ProductName"].y;
-			
 			
 			for(var i: int=0 ; i < WATCHING_INSTANCES.length ;i++)
 			{
@@ -394,10 +392,7 @@
 		}
 		
 		public function SendMessage( commandNum : int, ... args):void
-		{
-			if(_destroying == true)
-				return;
-				
+		{				
 			_userLastOperateTime = Now;
 			
 			var combinedCommand : String = GlobalMethod.StringArrayConcact(args, COMMAND_SEPARATOR);
@@ -414,7 +409,10 @@
 			if(IS_DEBUG_VERSION == false)
 			{
 				if(this == null)
+				{
+					DebugMsg("UITrigger   this == null");
 					return;
+				}
 			}
 			
 			var evtName: String = "";
@@ -454,6 +452,10 @@
 			else if(evtName != "")
 			{
 				SendMessage(7201, [currentPage, evtName]);
+			}
+			else
+			{
+				DebugMsg(  "  evtName invalid : " + evtName);
 			}
 
 			try 
@@ -495,12 +497,13 @@
 				//RecieveMessage("7710, 5, 2053");
 				RecieveMessage("7105");
 				
-//				RecieveMessage("7501, 20, 6, 1,辣的面,-5, product_images/HT000001.jpg,"+
-//					   		  "2,方便面,-5, product_images/HT000002.jpg,"+
-//								  "3,不方便面,-5, product_images/HT000003.jpg,"+
-//								  "4,藍莓汁,-65, product_images/HT15966.png,"+
-//								  "5,楊梅汁,25, product_images/HT35195.png,"+
-//								  "6,黑莓汁,-5, product_images/HT44310.png");
+				RecieveMessage("7501, 20, 6, 1,辣的面,-5, product_images/HT000001.jpg,"+
+					   		  "2,方便面,-5, product_images/HT000002.jpg,"+
+								  "3,不方便面,-5, product_images/HT000003.jpg,"+
+								  "4,藍莓汁,-65, product_images/HT15966.png,"+
+								  "5,楊梅汁,25, product_images/HT35195.png,"+
+								  "6,黑莓汁,-5, product_images/HT44310.png");
+				RecieveMessage("7502, 6, 1,0,2,0,3,1,4,1,5,0,6,1");
 			}
 			
 			if(evtName == "HiddenAdminBTN_BR")
@@ -2114,7 +2117,6 @@
 		//注：无参数，发送后结束FLASH
 		public function DoCommand_7104(args:Array):void
 		{
-			_destroying = true;
 			if(_adMovie != null)
 				_adMovie.StopVideo();
 			_adMovie = null;
