@@ -52,6 +52,7 @@
 		}
 		
         public function PlaySingleVideo(path:String):void{
+			GlobalMethod.DebugMsg(" Play Single Video : " + path);
 			// remove old
 			if ((!_currentIsVideo) && (_parentPictureClip != null) && (_currentPicLoader != null))
 			{
@@ -86,9 +87,13 @@
         	PlaySingleVideo( _moviePaths[_currentMovieIndex]);
         }
         public function StopVideo():void{
+			GlobalMethod.DebugMsg(" Stop Video ");
+			_parentVideoClip.parent.removeChild(_parentVideoClip);
+			_videoObject.attachNetStream(null);
 			_stream.pause();
         	_stream.close();
 			_stream.dispose();
+			_videoObject.clear();
 			_currentMovieIndex = 0;
 			_moviePaths.length = 0;
 		}
@@ -124,7 +129,6 @@
 		
         public function metaDataHandler(infoObject:Object):void {
             _duration = infoObject["duration"];
-            trace (" Time:  " + infoObject["duration"]);
         }
         public function get duration00():Number {     
             return _duration; 
@@ -132,7 +136,7 @@
 		
 		function myStatusHandler(event:NetStatusEvent):void  
 		{  
-			trace(event.info.code);
+			GlobalMethod.DebugMsg( " myStatusHandler : " + event.info.code);
 			
 			switch(event.info.code)
 			{

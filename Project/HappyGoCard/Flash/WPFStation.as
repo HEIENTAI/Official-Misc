@@ -48,7 +48,7 @@
 	public class WPFStation {
 
 		public static var IS_DEBUG_VERSION:Boolean = false //是否為 degbug 版
-		public static const IS_NO_CARD_VERSION:Boolean = true; //是否為 no card 機型 版
+		public static const IS_NO_CARD_VERSION:Boolean = false; //是否為 no card 機型 版
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
     	public static const LABEL_STAGE_1:String = "ProductList"; 
@@ -233,6 +233,8 @@
 		private var _currentCodeInputSeconds: int; // 目前使用者輸入 code 的標題
 		private var _currentMessageToken: String;
 		private var _previousDefaultMessageLoader: Loader = null; //前一次通用訊息的 圖片, 需移除 sh20130815 add
+		private var _7502DelaySeconds: int = 0; // 7502 指令, 延時秒數
+		private var _7502_Args;
 		// auto return
 		private var _userLastOperateTime: Date = new Date();
 		private var _userExitExportingPageTime: Date = new Date();
@@ -351,13 +353,29 @@
 					return;
 				}
 				
+				//延遲執行的  method 7502
+				if(commandNum == "7502")
+				{
+					_7502_Args = args;
+					StartCoroutine(UpdateDefaultMessage, DelayCall7502, _7502DelaySeconds * 1000, 1);// N 秒後消失
+					DebugMsg("Delay " + _7502DelaySeconds + "'s Call method  " + commandNum + " OK");
+					return;
+				}
+				
 				this[methodName](args); //call DoCommand_xxx
+				
 				DebugMsg("Call method  " + commandNum + " OK");
 			} 
 			catch (error:Error) 
 			{ 
-				DebugMsg(error.message);
+				DebugMsg( " catch :" + error.message);
 			}	
+		}
+		
+		public function DelayCall7502(e: Event)
+		{
+			DebugMsg( "DoCommand_7502" );
+			this["DoCommand_7502"](_7502_Args); //call DoCommand_xxx
 		}
 		
 		public function GetWatchingInstances():Array
@@ -495,15 +513,15 @@
 								 // "6,黑莓汁,-5, product_images/HT44310.png");
 
 				//RecieveMessage("7710, 5, 2053");
-				RecieveMessage("7105");
+				//RecieveMessage("7105");
 				
-				RecieveMessage("7501, 20, 6, 1,辣的面,-5, product_images/HT000001.jpg,"+
+				RecieveMessage("7501, 20, 6, 1,辣的面一二三四五六七,-5, D:/_wossssrks/自己工作相關/Happy GO 遠鼎(遠傳子公司)/20131204/Untitled-1.png,"+
 					   		  "2,方便面,-5, product_images/HT000002.jpg,"+
 								  "3,不方便面,-5, product_images/HT000003.jpg,"+
 								  "4,藍莓汁,-65, product_images/HT15966.png,"+
 								  "5,楊梅汁,25, product_images/HT35195.png,"+
 								  "6,黑莓汁,-5, product_images/HT44310.png");
-				RecieveMessage("7502, 6, 1,0,2,0,3,1,4,1,5,0,6,1");
+				//RecieveMessage("7502, 6, 1,0,2,0,3,1,4,1,5,0,6,1");
 			}
 			
 			if(evtName == "HiddenAdminBTN_BR")
@@ -524,6 +542,7 @@
 				//RecieveMessage("7100, 6, 頭部, 正文, 420-021-8816, product_images/HT000003.jpg, 0, msgToken");
 				//RecieveMessage("7100, 6, 抱歉, 券號輸入錯誤 \n 如有疑問，請洽客服, 420-021-8816, product_images/HappyGo.png, 340, msgToken");
 				RecieveMessage("7104");
+				RecieveMessage("7105");
 				
 //				RecieveMessage("7501, 40, 6, 1,不好吃,-5, product_images/HT000001.jpg,"+
 //						   		  "2,不好吃,-5, product_images/HT35195.png,"+
@@ -550,6 +569,7 @@
 //								  "6,吃阿,-5, product_images/HT15966.png");
 
 				RecieveMessage("7502, 6, 1,0,2,0,3,1,4,1,5,0,6,1");
+				//RecieveMessage("7106");
 			}
 			
 			}
@@ -644,7 +664,7 @@
 			{
 				_debugText.htmlText = _debugText.htmlText + " <br> " + Now + "  Debug: " +msg ;
 			}
-			trace( Now + "  Debug: " +msg );
+			trace( Now + " --  Debug: " +msg );
 		}
 		
 		private function HideAllMessageMovie(): void
@@ -715,7 +735,7 @@
 			msgMid.multiline = true;
 			msgMid.wordWrap = true;
 			msgMid.text = midContents;
-			DebugMsg(" msgTitle.text : " + msgMid.text );
+
 			//msg.htmlText =  "<p>" + contents + "<p>" + "<p> <font color=\"blue\" size = \"32\">This is some text!</font>  <img src='HKP'/>"; // 這個暫時不用
 			msgMid.autoSize = TextFieldAutoSize.CENTER; 
 			//msg.y = mc.height * 0.5 - msg.textHeight * 0.5; //因為有動畫, 可能無用
@@ -805,7 +825,7 @@
 				_messageTimer = null;
 			}
 			
-			//trace("弱頁面是返回上一頁");
+			//DebugMsg("弱頁面是返回上一頁");
 			// goto previous page
 			if(autoReturn)
 			{
@@ -1321,7 +1341,6 @@
 
 			if(_purchaseCodeInput == null)
 			{
-				//trace(DetectTextField);
 				tempField = DetectTextField( mc, NAME_TEXT_PURCHASECODE);
 			}
 			
@@ -1334,8 +1353,6 @@
 		
 		public function ResetPurchaseInput():void
 		{
-			trace(_purchaseCodeInput);
-			
 			_userInputtedCode = ""; // 清空輸入碼
 			_purchaseCodeInput.text = "";
 			_purchaseCodeInput.restrict = "a-zA-Z0-9_ \\-" ; //限制輸入字元
@@ -1343,7 +1360,6 @@
 			_purchaseCodeInput.addEventListener(KeyboardEvent.KEY_DOWN, PurchaseCodeKeyDown);
 			_rootStage.focus = _purchaseCodeInput;
 			
-			//trace("_rootStage.focus = _purchaseCodeInput; " + _purchaseCodeInput   + "    "   + _purchaseCodeInput.text);
 		}
 		
 		//此為 pre - process, flash 輸入到 textfield 前會執行  todo: 與 MobileCodeInputKeyDown 重構合併
@@ -1352,7 +1368,6 @@
 			if((event.charCode == 8) && (_userInputtedCode.length <=1)) //backspace, 且字會清空
 			{
 				_userInputtedCode = "";
-				trace("_userInputtedCode : " + _userInputtedCode + "   L:" + _userInputtedCode.length);
 				return;
 			}
 			
@@ -1360,7 +1375,6 @@
 			{
 				_userInputtedCode = _userInputtedCode.substr(0, _userInputtedCode.length - 1);
 				
-				trace("_userInputtedCode : " + _userInputtedCode + "   L:" + _userInputtedCode.length);
 				return;
 			}
 			
@@ -1373,18 +1387,15 @@
 			
 			if(event.charCode <= 31 && event.charCode != 0)//其他控制字元, 不處理, tf 用 restrict 擋掉
 			{
-				trace("event.charCode  " + event.charCode);
 				return;
 			}
 			
 			if(_userInputtedCode.length == MAX_PURCHASE_CODE)//超出字元數, 不處理, tf 用 maxChar 擋掉
 			{
-				trace("超出字元數, 不處理, tf 用 maxChar 擋掉");
 				return;
 			}
 			
 			_userInputtedCode = _userInputtedCode + String.fromCharCode(event.charCode);
-			trace("_userInputtedCode : " + _userInputtedCode + "   --L:" + _userInputtedCode.length);
 			StartCoroutine(OnTick_PasswordMask, OnComplete_PasswordMask, 500, 1);
 		}
 		
@@ -1394,7 +1405,6 @@
 			if((event.charCode == 8) && (_userInputtedMobile.length <=1)) //backspace, 且字會清空
 			{
 				_userInputtedMobile = "";
-				trace("_userInputtedMobile : " + _userInputtedMobile + "   L:" + _userInputtedMobile.length);
 				return;
 			}
 			
@@ -1402,7 +1412,6 @@
 			{
 				_userInputtedMobile = _userInputtedMobile.substr(0, _userInputtedMobile.length - 1);
 				
-				trace("_userInputtedMobile : " + _userInputtedMobile + "   L:" + _userInputtedMobile.length);
 				return;
 			}
 			
@@ -1421,14 +1430,12 @@
 			
 			if(event.charCode <= 31 && event.charCode != 0)//其他控制字元, 不處理, tf 用 restrict 擋掉
 			{
-				trace("event.charCode  " + event.charCode);
+				DebugMsg("event.charCode  " + event.charCode);
 				return;
 			}
 			
 			_userInputtedMobile  = _userInputtedMobile + String.fromCharCode(event.charCode);
-			trace("_userInputtedMobile : " + _userInputtedMobile + "   --L:" + _userInputtedMobile.length);
 			StartCoroutine(OnTick_PasswordMask, OnComplete_MobileMask, 500, 1);
-
 		}
 		
 		private function OnTick_PasswordMask(event:TimerEvent)
@@ -1453,7 +1460,7 @@
 				}
 			}			
 			_purchaseCodeInput.text = res;
-			//trace("_userInputtedCode : " + _userInputtedCode);
+			//DebugMsg("_userInputtedCode : " + _userInputtedCode);
 		}
 		
 		private function OnComplete_MobileMask(event:TimerEvent)
@@ -1473,7 +1480,7 @@
 				}
 			}			
 			_mobileInputCode.text = res;
-			//trace("_userInputtedCode : " + _userInputtedCode);
+			//DebugMsg("_userInputtedCode : " + _userInputtedCode);
 		}
 		
 		private function DetectTextFieldComplete_PurchaseCode(event:TimerEvent): void
@@ -1486,12 +1493,12 @@
 		{
 			if(parentMC == null)
 			{
-				trace("parentMC == null");
+				DebugMsg("parentMC == null");
 				return null;
 			}
 			if((parentMC[fieldName] == null) || (parentMC[fieldName] == undefined))
 			{
-				trace("parentMC[fieldName]");
+				DebugMsg("parentMC[fieldName]");
 				return null;
 			}
 			return parentMC[fieldName];
@@ -1538,8 +1545,7 @@
 				{
 					products[i].InnerClip.swapChildren(products[i].IncPointClip, products[i].ImageClip);
 				}
-				//products[i].Clip.setChildIndex(products[i].IncPointClip, 8);
-				//products[i].Clip.setChildIndex(products[i].DecPointClip, 9);
+				products[i].InnerClip.setChildIndex( products[i].ImageClip, 1); //商品永遠不蓋住文字, 寫死
 				
 				if(products[i].PurchasePoint > 0 ) //點數 + - 是不同圖片
 				{
@@ -1734,7 +1740,7 @@
 		
 		private function RemoveProduct():void
 		{
-			trace("RemoveProduct");
+			DebugMsg("RemoveProduct");
 			
 			if(_allProducts.length > 0)
 			{
@@ -1789,11 +1795,14 @@
 				allMarqueeWords = allMarqueeWords + myXML.Marquee[j] + MARQUEE_MOVE_SEPARATOR ;
 			}
 			
+			_7502DelaySeconds = int(myXML.DelaySeconds7502);
 			var seconds: int = int(myXML.AdPlayTime);
 			if( int(myXML.ForceDebug) >= 1)
 				IS_DEBUG_VERSION = true;
 			
-			_adMovie = new VideoPlay(RootStage[INSTANCE_NAME_VIDEO_CLIP], 
+			var movie = new MovieClip();
+			RootStage[INSTANCE_NAME_VIDEO_CLIP].addChild(movie);
+			_adMovie = new VideoPlay(movie, 
 									 RootStage[INSTANCE_NAME_ADIMAGE_CLIP], 1080, 650, seconds);
 			_rootMovie.addEventListener(Event.ENTER_FRAME, _adMovie.Update);
 			_adMovie.PlayVideo(_moviePaths);
@@ -1829,7 +1838,7 @@
 				image.height = PRODUCT_IMAGE_W * newImageRatio;
 				image.width = PRODUCT_IMAGE_W;	
 			}
-			
+
 			//置中作業
 			image.x = PRODUCT_IMAGE_X + (PRODUCT_IMAGE_W  - image.width)/2 ;
 			image.y = PRODUCT_IMAGE_Y + (PRODUCT_IMAGE_H  - image.height)/2;
@@ -2061,6 +2070,8 @@
 			rotate = args.shift();
 			token = args.shift();
 			
+			DebugMsg( "7100 秒數 " + remainSec + "收到的訊息 -- 上 : " + top + " 中 : " + midmsg + " 下 : " + bottom);
+			
 			On_Page_NoticeMessage();
 			Page_NoticeMessage();
 			
@@ -2101,7 +2112,7 @@
 						break;
 					case 1:
 						(RootStage[componentName] as DisplayObject).visible = false;
-						trace("visible = true");
+						DebugMsg("visible = true");
 						break;
 					break;
 					case 2:
@@ -2122,6 +2133,8 @@
 			_adMovie = null;
 			//RootStage.gotoAndStop(0); 防止 script 重複執行, sh130905 marked
 			_selfDefPage == "";
+			
+			//RootStage.Remove(); // 會完整移除 flash , 很恐怖
 			RootStage.Destroy();
 		}
 		
@@ -2167,7 +2180,11 @@
 			if(_adMovie != null)
 				_adMovie.StopVideo();
 			
-			RootStage.Reload();
+			if(RootStage != null)
+				RootStage.Reload();
+			else
+				DebugMsg( " RootStage is null ." );
+				
 		}
 		
 		//7501,页面倒计时长(秒)，商品总数量，商品编号(从1开始)，商品名称，点数，图片路径
@@ -2184,7 +2201,7 @@
 			
 			_idleSecondsCount = args.shift();
 			
-			trace(" _idleSecondsCount   " + _idleSecondsCount);
+			DebugMsg(" _idleSecondsCount   " + _idleSecondsCount);
 			total =  args.shift();
 			
 			RemoveProduct();
@@ -2307,6 +2324,12 @@
 			Page_ExportingCard();
 		}
 		
+		//7106,命令格式	注：无参数，发送后复位倒计时在最大值
+		public function DoCommand_7106(args:Array):void
+		{
+			_idleSecondsCount = 999999;
+		}
+		
 		//7901:		加载页面
 		public function DoCommand_7901(args:Array):void
 		{
@@ -2361,19 +2384,19 @@
 			if((evtName == HIDDEN_ADMIN_SEQUENCE[_hidden_admin_index]) && (_hidden_admin_index == HIDDEN_ADMIN_SEQUENCE.length-1))
 			{
 				_hidden_admin_index = 0;
-				trace("_hidden_admin_index : " + _hidden_admin_index);
+				DebugMsg("_hidden_admin_index : " + _hidden_admin_index);
 				return true;
 			}
 			else if(evtName == HIDDEN_ADMIN_SEQUENCE[_hidden_admin_index])
 			{
 				_hidden_admin_index++;
-				trace("_hidden_admin_index : " + _hidden_admin_index);
+				DebugMsg("_hidden_admin_index : " + _hidden_admin_index);
 				return false;
 			}
 			else
 			{
 				_hidden_admin_index = 0;
-				trace("_hidden_admin_index : " + _hidden_admin_index);
+				DebugMsg("_hidden_admin_index : " + _hidden_admin_index);
 				return false;
 			}
 		}
@@ -2387,7 +2410,7 @@
 			{
 				if(_userInputtedCode != "") //使用者已經輸入過內容,強制留在頁面了
 				{
-					trace("使用者已經輸入過內容,強制留在頁面了");
+					DebugMsg("使用者已經輸入過內容,強制留在頁面了");
 					_rootStage.focus = _purchaseCodeInput; //使用者點到空白處, 幫他重設 focus
 					return false; // keep 在同頁面, sev 不需要知道
 				}

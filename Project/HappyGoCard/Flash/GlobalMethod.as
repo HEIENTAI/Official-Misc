@@ -89,21 +89,44 @@
 			return false;
 		}
 		
+		// imageURL : 這個參數要注意 case-sensetive 的問題
 		public static function LoadMovieClipImage( clip: MovieClip, imageURL:String, onLoaded: Function):Loader
 		{
-			if(imageURL == "") // avoid  Error #2044: 未处理的 IOErrorEvent:。 text=Error #2035 
+			try
 			{
-				trace( " GlobalMethod.LoadMovieClipImage : imageURL is empty ");
-				return null;
-			}
-			var picLoader : Loader = new Loader();
-			clip.addChild(picLoader);
-    		picLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoaded); // event listener which is fired when loading is complete
-    		picLoader.load(new URLRequest(imageURL));
+				trace("LoadMovieClipImage : " + imageURL);
+				if(imageURL == "") // avoid  Error #2044: 未处理的 IOErrorEvent:。 text=Error #2035 
+				{
+					trace( " GlobalMethod.LoadMovieClipImage : imageURL is empty ");
+					return null;
+				}
+				var picLoader : Loader = new Loader();
+				clip.addChild(picLoader);
+    			picLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoaded); // event listener which is fired when loading is complete
+				picLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, LoadMovieClipImage_Error);
+    			picLoader.load(new URLRequest(imageURL));
 			
-			
-			trace(" GlobalMethod.LoadMovieClipImage : " + imageURL);
+				trace(" GlobalMethod.LoadMovieClipImage : " + imageURL);
+			} 
+			catch (error:Error) 
+			{ 
+				trace( " LoadMovieClipImage : " + error.message);
+			}	
 			return picLoader;
+		}
+		
+		function ioErrorHandler(e:IOErrorEvent):void 
+		{
+    		 
+    		 
+		}
+
+		public static function LoadMovieClipImage_Error(evt:IOErrorEvent)
+		{
+			var pattern:RegExp = /(?<=URL:\s).+/g;
+			
+			var fileName = evt.text.match(pattern);
+			trace( " LoadMovieClipImage 错误，档案读取失败 " + fileName); 
 		}
 		
 		//避免 error #2025 , 先檢查是否為 parent 再進行移除 child displayobject
@@ -122,6 +145,12 @@
 			}
 			mc.removeChild(child);
 			return true;
+		}
+		
+		public static function DebugMsg(msg:String)
+		{
+			var now = new Date();
+			trace( now + " --  Debug: " +msg );
 		}
 	}
 }	
