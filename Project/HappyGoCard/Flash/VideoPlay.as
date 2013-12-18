@@ -20,7 +20,7 @@
 		private var _parentVideoClip: MovieClip;
 		private var _parentPictureClip: MovieClip;
         public var _videoObject:Video;
-        private var connection:NetConnection = new NetConnection();
+        private var _connection:NetConnection = new NetConnection();
         public var _stream:NetStream;
         public var listener:Object = new Object();
         private var _duration:Number = 0; 
@@ -33,6 +33,7 @@
 		private var _adStartTime: Date;
 		private var _pictureInit_W: int;
 		private var _pictureInit_H: int;
+		private var _stopped = false; //標記是否要 stop
 			
 		public function VideoPlay( videoClip: MovieClip, imageClip: MovieClip, w: int, h: int, sec: int) {
 			// costreamtructor code
@@ -43,8 +44,8 @@
 			_pictureInit_H = _parentPictureClip.height; 
 			_adPlaySeconds = sec;
 			_parentVideoClip.addChild(_videoObject);
-        	connection.connect(null);
-        	_stream = new NetStream(connection);
+        	_connection.connect(null);
+        	_stream = new NetStream(_connection);
 			_stream.addEventListener(NetStatusEvent.NET_STATUS, myStatusHandler);  //  add a listener to the NetStream to listen for any changes that happen with the NetStream  
         	_videoObject.attachNetStream(_stream);
         	listener.onMetaData = metaDataHandler;
@@ -88,14 +89,17 @@
         }
         public function StopVideo():void{
 			GlobalMethod.DebugMsg(" Stop Video ");
+			_connection.connect(null);
 			_parentVideoClip.parent.removeChild(_parentVideoClip);
 			_videoObject.attachNetStream(null);
+			_stream.receiveAudio(false);
 			_stream.pause();
         	_stream.close();
 			_stream.dispose();
 			_videoObject.clear();
 			_currentMovieIndex = 0;
 			_moviePaths.length = 0;
+			_stopped = true;
 		}
 		
 		public function OnAdPictureLoaded(e: Event):void
@@ -138,6 +142,11 @@
 		{  
 			GlobalMethod.DebugMsg( " myStatusHandler : " + event.info.code);
 			
+			if(_stopped == true)
+			{
+				StopVideo();
+			}
+			
 			switch(event.info.code)
 			{
 				case "NetStream.Buffer.Full":
@@ -156,42 +165,16 @@
 				case "NetStream.Seek.InvalidTime":
 				break;
 				
+				case "NetStream.Pause.Notify":
+					//StopVideo();
+				break;
 				case "NetStream.Play.StreamNotFound":
 				case "NetStream.Play.Stop":
 					//StopVideo();
 					Next();
+					GlobalMethod.DebugMsg( " Video next ");
 				break;
 			}
-    //trace(event.info.code);  // this will handle any events that are fired when the video is playing back  
- 	   //switch(event.info.code)  //  switch statement to handle the various events with the NetConnection  
-// 	   {  
-//	        case "NetStream.Buffer.Full":  //  when our buffer is full fire the code below  
-//	            _stream.bufferTime = 10;  // set buffer time to 10 seconds  
-//	            Tweener.addTween(videoPreloader, {alpha:0, time:.3});  // tween videoPreloaders alpha to 0  
-//	        break;  
-//  	      case "NetStream.Buffer.Empty":  //  when our buffer is empty fire the code below  
-// 	           _stream.bufferTime = 10;  // set buffer time to 10 seconds  
-// 	           Tweener.addTween(videoPreloader, {alpha:1, time:.3});  // tween videoPreloaders alpha to 1  
-// 	       break;  
-// 	       case "NetStream.Play.Start":  //  when our video starts playing we fire the code below  
-// 	           _stream.bufferTime = 10;  // set the buffer time to 10 seconds  
-// 	           Tweener.addTween(videoPreloader, {alpha:1, time:.3});  //  tween videoPreloaders alpha to 1  
-// 	       break;  
-//  	      case "NetStream.Seek.Notify":  // when you seek with the scrubber it sends a notify signal of the time  
-//   	         _stream.bufferTime = 10;  // set the buffer time to 10 seconds  
-//   	         Tweener.addTween(videoPreloader, {alpha:1, time:.3});  //  tween videoPreloaders alpha to 1  
-//    	    break;  
-//    	    case "NetStream.Seek.InvalidTime":  // when you release the scrubber ahead of the video that has been loaded, you get this error.  it will jump you back to the last frame that has been loaded  
-//     	       _stream.bufferTime = 10;  // set the buffer time to 10 seconds  
-//     	       Tweener.addTween(videoPreloader, {alpha:1, time:.3});  //  tween videoPreloaders alpha to 1  
-//     	   break;  
-//     	   case "NetStream.Play.Stop":  // when you reach the end of the video  
-//       	     Tweener.addTween(videoPreloader, {alpha:0, time:.3});  //  tween videoPreloaders alpha to 0  
-//        	    _stream.pause();  // pause the video  
-//        	    _stream.seek(1);  // seek the video to the first frame  
-//       		 break;  
-//    		}  
-//		}
 		}
 		
 		private function Next():void

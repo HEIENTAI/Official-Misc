@@ -46,9 +46,8 @@
 	import flashx.textLayout.formats.VerticalAlign;
 	
 	public class WPFStation {
-
 		public static var IS_DEBUG_VERSION:Boolean = false //是否為 degbug 版
-		public static const IS_NO_CARD_VERSION:Boolean = false; //是否為 no card 機型 版
+		public static const IS_NO_CARD_VERSION:Boolean = true; //是否為 no card 機型 版
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
     	public static const LABEL_STAGE_1:String = "ProductList"; 
@@ -542,7 +541,7 @@
 				//RecieveMessage("7100, 6, 頭部, 正文, 420-021-8816, product_images/HT000003.jpg, 0, msgToken");
 				//RecieveMessage("7100, 6, 抱歉, 券號輸入錯誤 \n 如有疑問，請洽客服, 420-021-8816, product_images/HappyGo.png, 340, msgToken");
 				RecieveMessage("7104");
-				RecieveMessage("7105");
+				//RecieveMessage("7105");
 				
 //				RecieveMessage("7501, 40, 6, 1,不好吃,-5, product_images/HT000001.jpg,"+
 //						   		  "2,不好吃,-5, product_images/HT35195.png,"+
@@ -568,8 +567,9 @@
 //								  "5,難阿,25, product_images/HT000002.jpg,"+
 //								  "6,吃阿,-5, product_images/HT15966.png");
 
-				RecieveMessage("7502, 6, 1,0,2,0,3,1,4,1,5,0,6,1");
+				//RecieveMessage("7502, 6, 1,0,2,0,3,1,4,1,5,0,6,1");
 				//RecieveMessage("7106");
+				RecieveMessage("7105");
 			}
 			
 			}
