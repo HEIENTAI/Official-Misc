@@ -33,7 +33,6 @@
 		private var _adStartTime: Date;
 		private var _pictureInit_W: int;
 		private var _pictureInit_H: int;
-		private var _stopped = false; //標記是否要 stop
 			
 		public function VideoPlay( videoClip: MovieClip, imageClip: MovieClip, w: int, h: int, sec: int) {
 			// costreamtructor code
@@ -89,17 +88,24 @@
         }
         public function StopVideo():void{
 			GlobalMethod.DebugMsg(" Stop Video ");
-			_connection.connect(null);
-			_parentVideoClip.parent.removeChild(_parentVideoClip);
+			if(_connection != null)
+				_connection.connect(null);
+			if(_parentVideoClip != null)
+			{
+				if(_parentVideoClip.parent != null)
+					_parentVideoClip.parent.removeChild(_parentVideoClip);
+			}
 			_videoObject.attachNetStream(null);
-			_stream.receiveAudio(false);
-			_stream.pause();
-        	_stream.close();
-			_stream.dispose();
+			if(_stream != null)
+			{
+				_stream.receiveAudio(false);
+				_stream.pause();
+        		_stream.close();
+				_stream.dispose();
+			}
 			_videoObject.clear();
 			_currentMovieIndex = 0;
 			_moviePaths.length = 0;
-			_stopped = true;
 		}
 		
 		public function OnAdPictureLoaded(e: Event):void
@@ -142,15 +148,9 @@
 		{  
 			GlobalMethod.DebugMsg( " myStatusHandler : " + event.info.code);
 			
-			if(_stopped == true)
-			{
-				StopVideo();
-			}
-			
 			switch(event.info.code)
 			{
 				case "NetStream.Buffer.Full":
-				
 				break;
 				
 				case "NetStream.Buffer.Empty":
@@ -165,12 +165,8 @@
 				case "NetStream.Seek.InvalidTime":
 				break;
 				
-				case "NetStream.Pause.Notify":
-					//StopVideo();
-				break;
 				case "NetStream.Play.StreamNotFound":
 				case "NetStream.Play.Stop":
-					//StopVideo();
 					Next();
 					GlobalMethod.DebugMsg( " Video next ");
 				break;

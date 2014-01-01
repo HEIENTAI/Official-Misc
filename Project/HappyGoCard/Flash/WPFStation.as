@@ -237,6 +237,8 @@
 		// auto return
 		private var _userLastOperateTime: Date = new Date();
 		private var _userExitExportingPageTime: Date = new Date();
+		
+		//private var _timeID: String;
 
 		public function WPFStation( rootMovie: DisplayObject, rootStage: Stage) {
 			
@@ -326,6 +328,9 @@
 			_selfDefPage = ""; //尚未初始化的頁面
 			
 			LoadXML(FILE_CONFIG_XML , OnConfigXMLLoaded);
+			
+			// 使用 time id 去判斷 , 該物件何時建立的
+			//_timeID = flash.utils.getTimer();
 		}
 		
 		// "RecieveMessage" 此 method name 必須在 csharp 端的 invoke name (in XML)內設定
