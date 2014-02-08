@@ -51,7 +51,7 @@
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
     	public static const LABEL_STAGE_1:String = "ProductList"; 
-    	public static const LABEL_STAGE_2:String = "ShowMsg"; 
+    	public static const LABEL_STAGE_SHOW_MSG:String = "ShowMsg"; 
     	public static const LABEL_STAGE_3:String = "Waiting"; 
 		public static const LABEL_STAGE_PRODUCT_STOPPED:String = "ProductList_Stop";  
 		public static const LABEL_MESSAGE_HIDE:String = "Hidding";  
@@ -82,6 +82,7 @@
 		public static const PRODUCT_IMAGE_Y: int = -94;
 		public static const PRODUCT_ENABLE_ALPHA: Number = 1.0;
 		public static const PRODUCT_DISABLE_ALPHA: Number = 0.3;
+		
 		
 		//產品名稱, 字型大小設定相關
 		public static const PRODUCT_NAME_DEFAULT_MAX_LENGTH: Number = 8;
@@ -218,7 +219,7 @@
 		private var _adMovie: VideoPlay; // 下方廣告動畫
 		private var _moviePaths: Array;
 		private var _defaultProductTextFormat: TextFormat = null;
-		private var _defaultProductText_Y: Number = 0;
+		private var _defaultProductText_Y: Number = 0; //public static const PRODUCT_NAME_DEFAULT_Y: int = -156;
 		private var _displayObjectList: Array = new Array(); //所有動態建立的 DisplayObject 需要放於此, sh130821 add
 		private var _marqueeList: Array;  //20130821 maybe marked
 		private var _marqueeList_Index: int = 0; //20130821 maybe marked
@@ -237,6 +238,7 @@
 		// auto return
 		private var _userLastOperateTime: Date = new Date();
 		private var _userExitExportingPageTime: Date = new Date();
+		private var _enable = false; // WPF 功能是否開啟, 是否會傳協定
 		
 		//private var _timeID: String;
 
@@ -297,7 +299,7 @@
 		
 		public function Initialize(rootMovie: DisplayObject, rootStage: Stage):void
 		{
-			DebugMsg("Initialize");
+			GlobalMethod.DebugMsg("Initialize");
 			
 			_rootMovie = (rootMovie as MovieClip);
 			_rootStage = rootStage;
@@ -329,6 +331,7 @@
 			
 			LoadXML(FILE_CONFIG_XML , OnConfigXMLLoaded);
 			
+			_enable = true;
 			// 使用 time id 去判斷 , 該物件何時建立的
 			//_timeID = flash.utils.getTimer();
 		}
@@ -342,7 +345,7 @@
 			GlobalMethod.ArrayTrim(args);
 			if(args.length <=0)
 			{
-				DebugMsg("RecieveMessage no arguments");
+				GlobalMethod.DebugMsg("RecieveMessage no arguments");
 				return;
 			}
 			
@@ -353,7 +356,7 @@
 			{ 
 				if(!(methodName in this) || (this[methodName] == null) || (this[methodName] == undefined))
 				{
-					DebugMsg("RecieveMessage no method : " + methodName);
+					GlobalMethod.DebugMsg("RecieveMessage no method : " + methodName);
 					return;
 				}
 				
@@ -362,23 +365,23 @@
 				{
 					_7502_Args = args;
 					StartCoroutine(UpdateDefaultMessage, DelayCall7502, _7502DelaySeconds * 1000, 1);// N 秒後消失
-					DebugMsg("Delay " + _7502DelaySeconds + "'s Call method  " + commandNum + " OK");
+					GlobalMethod.DebugMsg("Delay " + _7502DelaySeconds + "'s Call method  " + commandNum + " OK");
 					return;
 				}
 				
 				this[methodName](args); //call DoCommand_xxx
 				
-				DebugMsg("Call method  " + commandNum + " OK");
+				GlobalMethod.DebugMsg("Call method  " + commandNum + " OK");
 			} 
 			catch (error:Error) 
 			{ 
-				DebugMsg( " catch :" + error.message);
+				GlobalMethod.DebugMsg( " catch :" + error.message);
 			}	
 		}
 		
 		public function DelayCall7502(e: Event)
 		{
-			DebugMsg( "DoCommand_7502" );
+			GlobalMethod.DebugMsg( "DoCommand_7502" );
 			this["DoCommand_7502"](_7502_Args); //call DoCommand_xxx
 		}
 		
@@ -417,10 +420,15 @@
 		{				
 			_userLastOperateTime = Now;
 			
+			if(_enable == false)
+			{
+				return;
+			}
+			
 			var combinedCommand : String = GlobalMethod.StringArrayConcact(args, COMMAND_SEPARATOR);
 			
 			combinedCommand = commandNum + COMMAND_SEPARATOR + combinedCommand;
-			DebugMsg("SendMessage: " + combinedCommand);
+			GlobalMethod.DebugMsg("SendMessage: " + combinedCommand);
 			//ExternalInterface.call("ASCommand", commandNum, args ); //多個參數版本已棄用 2013.06.04
 			ExternalInterface.call("ASCommand", combinedCommand ); //單參數使用 ", " 分隔的版本
 		}
@@ -432,7 +440,7 @@
 			{
 				if(this == null)
 				{
-					DebugMsg("UITrigger   this == null");
+					GlobalMethod.DebugMsg("UITrigger   this == null");
 					return;
 				}
 			}
@@ -477,7 +485,7 @@
 			}
 			else
 			{
-				DebugMsg(  "  evtName invalid : " + evtName);
+				GlobalMethod.DebugMsg(  "  evtName invalid : " + evtName);
 			}
 
 			try 
@@ -486,7 +494,7 @@
 				if(!(methodName in this) || (this[methodName] == null) || (this[methodName] == undefined))
 				{
 					needSend = true;
-					//DebugMsg("Ready Send Message no method : " + methodName);
+					//GlobalMethod.DebugMsg("Ready Send Message no method : " + methodName);
 				}
 				else //有 method name 代表送出 command 是有條件的, 檢查之
 				{
@@ -495,12 +503,12 @@
 			}
 			catch (error:Error) 
 			{ 
-				DebugMsg(error.message);
+				GlobalMethod.DebugMsg(error.message);
 			}	
 			
 			if(needSend == false)
 			{
-				DebugMsg(commandNumber + " needSend == false: ");
+				GlobalMethod.DebugMsg(commandNumber + " needSend == false: ");
 				return;
 			}
 			
@@ -590,7 +598,7 @@
 			var millisecondDifference:int = Now.valueOf() - _userLastOperateTime.valueOf();
 			var seconds:int = millisecondDifference / 1000;
 
-			if( seconds > _idleSecondsCount ) //閒置過久
+			if( seconds > _idleSecondsCount ) //閒置過久, 返回
 			{
 				UITrigger(null, INSTANCE_NAME_RETURN_BUTTON);
 				_userLastOperateTime = Now;
@@ -654,7 +662,7 @@
 			if(_rootStage != null)
 				_rootStage.addChild(_debugText);
 			else
-				DebugMsg("_rootStage !============== null");
+				GlobalMethod.DebugMsg("_rootStage !============== null");
 			var format:TextFormat = new TextFormat(); 
             format.font = "Verdana"; 
             format.color = 0x000000; 
@@ -695,7 +703,7 @@
 			}
 			catch(e:Error)
 			{
-				DebugMsg(e.message);
+				GlobalMethod.DebugMsg(e.message);
 			}
 		}
 		
@@ -713,7 +721,7 @@
 			
 			if(remaindSeconds == 0) //持續秒數為 0 代表隱藏訊息
 			{
-				DebugMsg(" ShowDefaultMessage.remaindSeconds : " + remaindSeconds);
+				GlobalMethod.DebugMsg(" ShowDefaultMessage.remaindSeconds : " + remaindSeconds);
 				HideDefaultMessage(null);
 			}
 
@@ -722,7 +730,7 @@
 			
 			if(mc == null)
 			{
-				DebugMsg("DoCommand error.1");
+				GlobalMethod.DebugMsg("DoCommand error.1");
 				return;
 			}
 			mc.visible = true;
@@ -732,7 +740,7 @@
 			
 			if(msgTitle==null)
 			{
-				DebugMsg("DoCommand error.2");
+				GlobalMethod.DebugMsg("DoCommand error.2");
 				return;
 			}
 			
@@ -771,7 +779,7 @@
 				_previousDefaultMessageLoader = null;
 			}
 			if(imagePath == "")
-				DebugMsg(" ShowDefaultMessage : imagePath is null " );
+				GlobalMethod.DebugMsg(" ShowDefaultMessage : imagePath is null " );
 			else
 				_previousDefaultMessageLoader = GlobalMethod.LoadMovieClipImage( imageMC, imagePath, OnMessageImageLoaded);
 				
@@ -786,7 +794,7 @@
 			
 			if(mc == null)
 			{
-				DebugMsg("DoCommand error.1");
+				GlobalMethod.DebugMsg("DoCommand error.1");
 				return;
 			}
 			mc.visible = true;
@@ -794,7 +802,7 @@
 			var msg: TextField = mc["MovieMsgNotice"]["Message"] as TextField;
 			if(msg==null)
 			{
-				DebugMsg("DoCommand error.2");
+				GlobalMethod.DebugMsg("DoCommand error.2");
 				return;
 			}
 			msg.multiline = true;
@@ -819,7 +827,7 @@
 			
 			if(mc == null)
 			{
-				DebugMsg("HideDefaultMessage error.1");
+				GlobalMethod.DebugMsg("HideDefaultMessage error.1");
 				return;
 			}
 			mc.visible = false;
@@ -830,7 +838,7 @@
 				_messageTimer = null;
 			}
 			
-			//DebugMsg("弱頁面是返回上一頁");
+			//GlobalMethod.DebugMsg("弱頁面是返回上一頁");
 			// goto previous page
 			if(autoReturn)
 			{
@@ -877,7 +885,7 @@
 			}
 			catch(error:Error)
 			{
-				DebugMsg(error.message);
+				GlobalMethod.DebugMsg(error.message);
 			}
 		}
 		//---------------------------- Property -----------------------------
@@ -941,7 +949,7 @@
 		// 執行 1次, Page Main, 等待使用者感應.主畫面
 		public function On_Page_WaitingMain():void
 		{
-			DebugMsg("On_Page_WaitingMain");
+			GlobalMethod.DebugMsg("On_Page_WaitingMain");
 			ResetUIRuntimeDataFlag(); //防止 UI 出錯, 事件重新加入
 			
 			_selfDefPage_Previous = _selfDefPage;
@@ -968,14 +976,14 @@
 		// 執行 1次, Page UserAuthorize, 等待使用者輸入   購物碼
 		private function On_Page_WaitingUserAuthorize():void
 		{
-			DebugMsg("On_Page_WaitingUserAuthorize");
+			GlobalMethod.DebugMsg("On_Page_WaitingUserAuthorize");
 			ResetUIRuntimeDataFlag(); //防止 UI 出錯, 事件重新加入
 						
 			_selfDefPage_Previous = _selfDefPage;
 			_selfDefPage = SELF_DEF_PAGE_WAITING_AUTH;
-			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_2)
+			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_SHOW_MSG)
 			{
-				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_2);
+				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_SHOW_MSG);
 			}
 			
 			//----
@@ -1000,7 +1008,7 @@
 		// 執行 1次, Page AUTHORIZED_PURCHASE, 已驗證, 準備購買, 購買碼已輸入 or 已刷卡
 		private function On_Page_AuthorizedPurchase():void
 		{
-			DebugMsg("On_Page_AuthorizedPurchase : " + SELF_DEF_PAGE_AUTHORIZED_PURCHASE);
+			GlobalMethod.DebugMsg("On_Page_AuthorizedPurchase : " + SELF_DEF_PAGE_AUTHORIZED_PURCHASE);
 			_selfDefPage_Previous = _selfDefPage;
 			_selfDefPage = SELF_DEF_PAGE_AUTHORIZED_PURCHASE;
 			
@@ -1025,7 +1033,7 @@
 		// 執行 1次, 獨立顯示訊息
 		private function On_Page_NoticeMessage():void
 		{
-			DebugMsg("On_Page_NoticeMessage");
+			GlobalMethod.DebugMsg("On_Page_NoticeMessage");
 			HideProductDetail();
 			DisableExportingCard();
 			DisableMobileCodeInput();
@@ -1039,7 +1047,7 @@
 		// 執行 1次, 領取卡片(等待出卡)
 		private function On_Page_ExportingCard():void
 		{
-			DebugMsg("On_Page_ExportingCard");
+			GlobalMethod.DebugMsg("On_Page_ExportingCard");
 			HideProductDetail();
 			DisableMobileCodeInput();
 			
@@ -1056,7 +1064,7 @@
 		// 執行 1次, 領取商品 sh20130815 add
 		private function On_Page_ExportingProduct():void
 		{
-			DebugMsg("On_Page_ExportingProduct");
+			GlobalMethod.DebugMsg("On_Page_ExportingProduct");
 			HideProductDetail();
 			DisableMobileCodeInput();
 			
@@ -1435,7 +1443,7 @@
 			
 			if(event.charCode <= 31 && event.charCode != 0)//其他控制字元, 不處理, tf 用 restrict 擋掉
 			{
-				DebugMsg("event.charCode  " + event.charCode);
+				GlobalMethod.DebugMsg("event.charCode  " + event.charCode);
 				return;
 			}
 			
@@ -1465,7 +1473,7 @@
 				}
 			}			
 			_purchaseCodeInput.text = res;
-			//DebugMsg("_userInputtedCode : " + _userInputtedCode);
+			//GlobalMethod.DebugMsg("_userInputtedCode : " + _userInputtedCode);
 		}
 		
 		private function OnComplete_MobileMask(event:TimerEvent)
@@ -1485,7 +1493,7 @@
 				}
 			}			
 			_mobileInputCode.text = res;
-			//DebugMsg("_userInputtedCode : " + _userInputtedCode);
+			//GlobalMethod.DebugMsg("_userInputtedCode : " + _userInputtedCode);
 		}
 		
 		private function DetectTextFieldComplete_PurchaseCode(event:TimerEvent): void
@@ -1498,12 +1506,12 @@
 		{
 			if(parentMC == null)
 			{
-				DebugMsg("parentMC == null");
+				GlobalMethod.DebugMsg("parentMC == null");
 				return null;
 			}
 			if((parentMC[fieldName] == null) || (parentMC[fieldName] == undefined))
 			{
-				DebugMsg("parentMC[fieldName]");
+				GlobalMethod.DebugMsg("parentMC[fieldName]");
 				return null;
 			}
 			return parentMC[fieldName];
@@ -1533,7 +1541,7 @@
 				products[i].InnerClip = _rootMovie["ButtonProduct_" + products[i].ID][INSTANCE_NAME_PRODUCT_MENU_CHLID_CLIP] ;
 				if(products[i].InnerClip==null)
 				{
-					DebugMsg("amazing wrong products[i].InnerClip==null");
+					GlobalMethod.DebugMsg("amazing wrong products[i].InnerClip==null");
 					continue;
 				}
 
@@ -1582,14 +1590,14 @@
 				{
 					adjustFormat.size = PRODUCT_NAME_MINIMIZE_1_FONT_SIZE;
 					productText.setTextFormat(adjustFormat);
-					productText.y = productText.y + 8;
+					productText.y = _defaultProductText_Y + 8;
 				}
 				else if(len <= PRODUCT_NAME_MINIMIZE_2_MAX_LENGTH)
 				//else
 				{
 					adjustFormat.size = PRODUCT_NAME_MINIMIZE_2_FONT_SIZE;
 					productText.setTextFormat(adjustFormat);
-					productText.y = productText.y + 8;
+					productText.y = _defaultProductText_Y + 8;
 				}
 				else
 				{
@@ -1633,7 +1641,7 @@
 			}
 			catch(error: Error)
 			{
-				DebugMsg("HandleProductDetail : " + error.message);
+				GlobalMethod.DebugMsg("HandleProductDetail : " + error.message);
 			}
 		}
 		
@@ -1686,7 +1694,7 @@
 				
 				if(_allProducts.length < productNO)
 				{
-					DebugMsg("_allProducts.length < productNO : " + _allProducts.length + "    " + productNO);
+					GlobalMethod.DebugMsg("_allProducts.length < productNO : " + _allProducts.length + "    " + productNO);
 					return;
 				}
 				
@@ -1704,7 +1712,7 @@
 			}
 			catch (error:Error) 
 			{
-				DebugMsg(error.message);
+				GlobalMethod.DebugMsg(error.message);
 			}
 		}
 		
@@ -1722,7 +1730,7 @@
 			}
 			catch (error:Error) 
 			{
-				DebugMsg(error.message);
+				GlobalMethod.DebugMsg(error.message);
 			}
 		}
 		
@@ -1739,13 +1747,13 @@
 			}
 			catch (error:Error) 
 			{
-				DebugMsg(error.message);
+				GlobalMethod.DebugMsg(error.message);
 			}
 		}
 		
 		private function RemoveProduct():void
 		{
-			DebugMsg("RemoveProduct");
+			GlobalMethod.DebugMsg("RemoveProduct");
 			
 			if(_allProducts.length > 0)
 			{
@@ -1761,18 +1769,18 @@
 					}
 				}
 				
-				DebugMsg("清除");
+				GlobalMethod.DebugMsg("清除");
 			}
 			else
 			{
-				DebugMsg("沒清除 " + _allProducts.length);
+				GlobalMethod.DebugMsg("沒清除 " + _allProducts.length);
 			}
 			_allProducts.length = 0;
 		}
 		
 		private function LoadXML(path: String, onLoaded: Function)
 		{
-			DebugMsg("LoadXML  path : " + path);
+			GlobalMethod.DebugMsg("LoadXML  path : " + path);
 			var myLoader:URLLoader = new URLLoader();
 			myLoader.load(new URLRequest(path));
 			myLoader.addEventListener(Event.COMPLETE, onLoaded);
@@ -1926,8 +1934,8 @@
 		//<1100> 進入激活流程 - 要求螢幕顯示「是否擁有 Happy GO 卡」
 		public function DoCommand_1100(args:Array):void
 		{
-			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_2){
-				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_2);
+			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_SHOW_MSG){
+				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_SHOW_MSG);
 				setTimeout(DoCommand_1100, 0, args); //由於 gotoAndPlay 不會馬上執行的 async 問題, 會造成物件存取不到, 因此 setTimeout
 				return;
 			}
@@ -1947,8 +1955,8 @@
 		//<1400> 要求螢幕顯示 - 提示「請在感應區刷Happy購卡或掃描動態消費碼」
 		public function DoCommand_1400(args:Array):void
 		{
-			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_2){
-				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_2);
+			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_SHOW_MSG){
+				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_SHOW_MSG);
 				setTimeout(DoCommand_1400, 0, args); //由於 gotoAndPlay 不會馬上執行的 async 問題, 會造成物件存取不到, 因此 setTimeout
 				return;
 			}
@@ -1957,22 +1965,22 @@
 		//<1500> 要求螢幕顯示 - 提示「您可使用的開心點數：xx。請選擇您要兌換的樣品」 //[1] 剩餘點數
 		public function DoCommand_1500(args:Array):void
 		{
-			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_2){
-				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_2);
+			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_SHOW_MSG){
+				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_SHOW_MSG);
 				setTimeout(DoCommand_1500, 0, args); //由於 gotoAndPlay 不會馬上執行的 async 問題, 會造成物件存取不到, 因此 setTimeout
 				return;
 			}
 			if(args.length < 2)
 			{
-				DebugMsg("DoCommand_1500 error !");
+				GlobalMethod.DebugMsg("DoCommand_1500 error !");
 			}
 			//ShowDefaultMessage("您可使用的开心点数："+ args[1] + "。请选择您要兑换的样品");
 		}
 		//<1800> 要求螢幕顯示 「卡片未激活，暫不能使用，請洽客服」
 		public function DoCommand_1800(args:Array):void
 		{
-			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_2){
-				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_2);
+			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_SHOW_MSG){
+				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_SHOW_MSG);
 				setTimeout(DoCommand_1800, 0, args); //由於 gotoAndPlay 不會馬上執行的 async 問題, 會造成物件存取不到, 因此 setTimeout
 				return;
 			}
@@ -1981,8 +1989,8 @@
 		//<1900> 要求螢幕顯示 「動態消費碼已失效，請檢查動態消費碼是否超時或輸入錯誤，如有疑問，請洽客服4000218826」
 		public function DoCommand_1900(args:Array):void
 		{
-			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_2){
-				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_2);
+			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_SHOW_MSG){
+				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_SHOW_MSG);
 				setTimeout(DoCommand_1900, 0, args); //由於 gotoAndPlay 不會馬上執行的 async 問題, 會造成物件存取不到, 因此 setTimeout
 				return;
 			}
@@ -2058,7 +2066,7 @@
 		{
 			if(args.length <= 1)
 			{
-				DebugMsg("DoCommand_7100 error. 1");
+				GlobalMethod.DebugMsg("DoCommand_7100 error. 1");
 			}
 			
 			var remainSec: int;
@@ -2075,13 +2083,13 @@
 			rotate = args.shift();
 			token = args.shift();
 			
-			DebugMsg( "7100 秒數 " + remainSec + "收到的訊息 -- 上 : " + top + " 中 : " + midmsg + " 下 : " + bottom);
+			GlobalMethod.DebugMsg( "7100 秒數 " + remainSec + "收到的訊息 -- 上 : " + top + " 中 : " + midmsg + " 下 : " + bottom);
 			
 			On_Page_NoticeMessage();
 			Page_NoticeMessage();
 			
-//			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_2){
-//				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_2);
+//			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_SHOW_MSG){
+//				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_SHOW_MSG);
 //			}
 
 			ShowDefaultMessage(remainSec, top, midmsg, bottom, imagePath, rotate, token);
@@ -2092,7 +2100,7 @@
 		{
 			if(args.length <= 1)
 			{
-				DebugMsg("DoCommand_7101 error. 1");
+				GlobalMethod.DebugMsg("DoCommand_7101 error. 1");
 			}
 			
 			var componentNum: int;
@@ -2107,7 +2115,7 @@
 				
 				if(!(componentName in RootStage) || (RootStage[componentName] == null) || (RootStage[componentName] == undefined))
 				{
-					DebugMsg( " Not Exist : " + componentName);
+					GlobalMethod.DebugMsg( " Not Exist : " + componentName);
 					continue;
 				}
 				switch(behavior)
@@ -2117,7 +2125,7 @@
 						break;
 					case 1:
 						(RootStage[componentName] as DisplayObject).visible = false;
-						DebugMsg("visible = true");
+						GlobalMethod.DebugMsg("visible = true");
 						break;
 					break;
 					case 2:
@@ -2139,6 +2147,7 @@
 			//RootStage.gotoAndStop(0); 防止 script 重複執行, sh130905 marked
 			_selfDefPage == "";
 			
+			_enable = false;
 			//RootStage.Remove(); // 會完整移除 flash , 很恐怖
 			RootStage.Destroy();
 		}
@@ -2188,7 +2197,7 @@
 			if(RootStage != null)
 				RootStage.Reload();
 			else
-				DebugMsg( " RootStage is null ." );
+				GlobalMethod.DebugMsg( " RootStage is null ." );
 				
 		}
 		
@@ -2201,12 +2210,12 @@
 			
 			if(args.length <= 2)
 			{
-				DebugMsg("DoCommand_7501 error. 1");
+				GlobalMethod.DebugMsg("DoCommand_7501 error. 1");
 			}
 			
 			_idleSecondsCount = args.shift();
 			
-			DebugMsg(" _idleSecondsCount   " + _idleSecondsCount);
+			GlobalMethod.DebugMsg(" _idleSecondsCount   " + _idleSecondsCount);
 			total =  args.shift();
 			
 			RemoveProduct();
@@ -2289,7 +2298,7 @@
 		{
 			if(args.length <= 1)
 			{
-				DebugMsg("DoCommand_7710 error. 1");
+				GlobalMethod.DebugMsg("DoCommand_7710 error. 1");
 			}
 			
 			var keepSec: int;
@@ -2298,8 +2307,8 @@
 			keepSec = args.shift();
 			remainPoint = args.shift();
 			
-//			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_2){
-//				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_2);
+//			if(RootStage.currentLabel!=WPFStation.LABEL_STAGE_SHOW_MSG){
+//				RootStage.gotoAndPlay(WPFStation.LABEL_STAGE_SHOW_MSG);
 //			}
 
 			var msg:String = STR_0001 + remainPoint + STR_0002;
@@ -2389,19 +2398,19 @@
 			if((evtName == HIDDEN_ADMIN_SEQUENCE[_hidden_admin_index]) && (_hidden_admin_index == HIDDEN_ADMIN_SEQUENCE.length-1))
 			{
 				_hidden_admin_index = 0;
-				DebugMsg("_hidden_admin_index : " + _hidden_admin_index);
+				GlobalMethod.DebugMsg("_hidden_admin_index : " + _hidden_admin_index);
 				return true;
 			}
 			else if(evtName == HIDDEN_ADMIN_SEQUENCE[_hidden_admin_index])
 			{
 				_hidden_admin_index++;
-				DebugMsg("_hidden_admin_index : " + _hidden_admin_index);
+				GlobalMethod.DebugMsg("_hidden_admin_index : " + _hidden_admin_index);
 				return false;
 			}
 			else
 			{
 				_hidden_admin_index = 0;
-				DebugMsg("_hidden_admin_index : " + _hidden_admin_index);
+				GlobalMethod.DebugMsg("_hidden_admin_index : " + _hidden_admin_index);
 				return false;
 			}
 		}
@@ -2415,7 +2424,7 @@
 			{
 				if(_userInputtedCode != "") //使用者已經輸入過內容,強制留在頁面了
 				{
-					DebugMsg("使用者已經輸入過內容,強制留在頁面了");
+					GlobalMethod.DebugMsg("使用者已經輸入過內容,強制留在頁面了");
 					_rootStage.focus = _purchaseCodeInput; //使用者點到空白處, 幫他重設 focus
 					return false; // keep 在同頁面, sev 不需要知道
 				}
@@ -2439,6 +2448,13 @@
 			var needSend: Boolean = true;
 			if(_selfDefPage == SELF_DEF_PAGE_WAITING_AUTH) //等待用戶感應, 刷卡
 			{
+				// 2014.02.08 add , 因為 input 點數券的頁面, 歸類在 SELF_DEF_PAGE_WAITING_AUTH, 需要被關掉
+				if(_messageTimer != null) //將訊息框倒數計時的 timer 關掉
+				{
+					_messageTimer.stop();
+				}
+				HideDefaultMessage(null);
+				
 				needSend = true;
 				//20130623 改為不主動返回, 讓 server 決定要回到哪一個頁面
 				//On_Page_WaitingMain();
@@ -2453,7 +2469,7 @@
 				HideDefaultMessage(null);
 			}
 			else if(_selfDefPage == SELF_DEF_PAGE_MAIN) // 主頁面中又點 return , 要送, ser 要求, 原因不明
-			{
+			{			
 				needSend = true;
 				//20130623 改為不主動返回, 讓 server 決定要回到哪一個頁面
 				//On_Page_WaitingMain();
