@@ -46,7 +46,7 @@
 	import flashx.textLayout.formats.VerticalAlign;
 	
 	public class WPFStation {
-		public static var IS_DEBUG_VERSION:Boolean = false //是否為 degbug 版
+		public static var IS_DEBUG_VERSION:Boolean = false; //是否為 degbug 版
 		public static const IS_NO_CARD_VERSION:Boolean = true; //是否為 no card 機型 版
 
     	public static const COMMAND_NUM_INVALID:int = 0; 
@@ -93,6 +93,8 @@
 		public static const PRODUCT_NAME_MINIMIZE_2_FONT_SIZE: Number = 22;
 		public static const PRODUCT_NAME_MINIMIZE_3_MAX_LENGTH: Number = 26;
 		public static const PRODUCT_NAME_MINIMIZE_3_FONT_SIZE: Number = 20;
+		public static const IDLE_SECONDES_DEFAULT : int = 30; 	//server需要的. 幾秒後認定使用者不在機台前操作
+		public static const IDLE_SECONDES_INPUTTING : int = 10; 	//server需要的. 幾秒後認定使用者不在機台前操作, 輸入狀態的秒數
 		public static const MESSAGE_IMAGE_CLIP_X: int = -440.75; //通用訊息圖片, 
 		public static const MESSAGE_IMAGE_CLIP_Y: int = 292.85; //通用訊息圖片, 
 		public static const MESSAGE_IMAGE_CLIP_ROTATE_Y: int = 372.85;  //通用訊息圖片, 有旋轉的話, Y 要改變
@@ -949,6 +951,8 @@
 		// 執行 1次, Page Main, 等待使用者感應.主畫面
 		public function On_Page_WaitingMain():void
 		{
+			_idleSecondsCount = IDLE_SECONDES_DEFAULT ; // 設定這個模式下的 idle 容許秒數
+			
 			GlobalMethod.DebugMsg("On_Page_WaitingMain");
 			ResetUIRuntimeDataFlag(); //防止 UI 出錯, 事件重新加入
 			
@@ -976,6 +980,8 @@
 		// 執行 1次, Page UserAuthorize, 等待使用者輸入   購物碼
 		private function On_Page_WaitingUserAuthorize():void
 		{
+			_idleSecondsCount = IDLE_SECONDES_INPUTTING ; // 設定這個模式下的 idle 容許秒數
+			
 			GlobalMethod.DebugMsg("On_Page_WaitingUserAuthorize");
 			ResetUIRuntimeDataFlag(); //防止 UI 出錯, 事件重新加入
 						
@@ -1008,6 +1014,8 @@
 		// 執行 1次, Page AUTHORIZED_PURCHASE, 已驗證, 準備購買, 購買碼已輸入 or 已刷卡
 		private function On_Page_AuthorizedPurchase():void
 		{
+			_idleSecondsCount = IDLE_SECONDES_DEFAULT ; // 設定這個模式下的 idle 容許秒數
+			
 			GlobalMethod.DebugMsg("On_Page_AuthorizedPurchase : " + SELF_DEF_PAGE_AUTHORIZED_PURCHASE);
 			_selfDefPage_Previous = _selfDefPage;
 			_selfDefPage = SELF_DEF_PAGE_AUTHORIZED_PURCHASE;
@@ -1033,6 +1041,8 @@
 		// 執行 1次, 獨立顯示訊息
 		private function On_Page_NoticeMessage():void
 		{
+			_idleSecondsCount = IDLE_SECONDES_DEFAULT ; // 設定這個模式下的 idle 容許秒數
+			
 			GlobalMethod.DebugMsg("On_Page_NoticeMessage");
 			HideProductDetail();
 			DisableExportingCard();
@@ -1047,6 +1057,8 @@
 		// 執行 1次, 領取卡片(等待出卡)
 		private function On_Page_ExportingCard():void
 		{
+			_idleSecondsCount = IDLE_SECONDES_DEFAULT ; // 設定這個模式下的 idle 容許秒數
+			
 			GlobalMethod.DebugMsg("On_Page_ExportingCard");
 			HideProductDetail();
 			DisableMobileCodeInput();
@@ -1064,6 +1076,8 @@
 		// 執行 1次, 領取商品 sh20130815 add
 		private function On_Page_ExportingProduct():void
 		{
+			_idleSecondsCount = IDLE_SECONDES_DEFAULT ; // 設定這個模式下的 idle 容許秒數
+			
 			GlobalMethod.DebugMsg("On_Page_ExportingProduct");
 			HideProductDetail();
 			DisableMobileCodeInput();
@@ -1081,6 +1095,8 @@
 		// 執行 1次, 申請卡片(輸入手機號碼)
 		private function On_Page_MobileCodeInput():void
 		{
+			_idleSecondsCount = IDLE_SECONDES_DEFAULT ; // 設定這個模式下的 idle 容許秒數
+			
 			HideProductDetail();
 			DisableExportingCard();
 			
@@ -1375,9 +1391,20 @@
 			
 		}
 		
+		public function ClearPurchaseInput():void
+		{
+			_userInputtedCode = ""; // 清空輸入碼
+			_purchaseCodeInput.text = "";
+			
+			GlobalMethod.DebugMsg("清空輸入碼");
+		}
+		
 		//此為 pre - process, flash 輸入到 textfield 前會執行  todo: 與 MobileCodeInputKeyDown 重構合併
 		private function PurchaseCodeKeyDown(event:KeyboardEvent)
 		{
+			_userLastOperateTime = Now; //輸入也預設, 使用者有操作過, 更新 idle 秒數
+			_idleSecondsCount = IDLE_SECONDES_DEFAULT ; // 設定這個模式下的 idle 容許秒數 , 文字輸入後改回預設值
+			
 			if((event.charCode == 8) && (_userInputtedCode.length <=1)) //backspace, 且字會清空
 			{
 				_userInputtedCode = "";
@@ -2449,6 +2476,7 @@
 			if(_selfDefPage == SELF_DEF_PAGE_WAITING_AUTH) //等待用戶感應, 刷卡
 			{
 				// 2014.02.08 add , 因為 input 點數券的頁面, 歸類在 SELF_DEF_PAGE_WAITING_AUTH, 需要被關掉
+				ClearPurchaseInput();
 				if(_messageTimer != null) //將訊息框倒數計時的 timer 關掉
 				{
 					_messageTimer.stop();
